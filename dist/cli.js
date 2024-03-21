@@ -13,6 +13,7 @@ import inquirer from "inquirer";
 import * as fs from "fs";
 import { loadCalculateAll, loadCalculateOneWith, loadFilterAllWith } from "./loadActions.js";
 import { WORKFILES } from "./constants.js";
+import { FilterTypesEnum } from "./enums.js";
 console.log(chalk.bgBlue.white.bold(" Welcome to Productivity Tracker (Made by www.hasanweb.tech) \n\n"));
 const exitOption = {
     name: chalk.bgRed.white.bold("Exit"),
@@ -87,14 +88,13 @@ export function qustionsForCalculateOne() {
             console.error("Error reading directory:", err);
             return;
         }
-        const filesToWorkOn = files.filter((file) => !file.endsWith(".js") && file !== ".git" && !file.endsWith(".txt"));
         const answer = yield inquirer.prompt([
             {
                 type: "list",
                 name: "fileName",
                 message: "Choose a file",
                 choices: [
-                    ...filesToWorkOn.map((file) => ({
+                    ...files.map((file) => ({
                         name: file,
                         value: file,
                         short: "You Chose " + file,
@@ -126,22 +126,22 @@ export function qustionsForFilterAll() {
                     },
                     {
                         name: "year",
-                        value: "y",
+                        value: "0",
                         short: "You Chose year",
                     },
                     {
                         name: "month",
-                        value: "m",
+                        value: "1",
                         short: "You Chose month",
                     },
                     {
                         name: "day",
-                        value: "d",
+                        value: "2",
                         short: "You Chose day",
                     },
                     {
                         name: "hour",
-                        value: "h",
+                        value: "3",
                         short: "You Chose hour",
                     },
                     {
@@ -176,16 +176,16 @@ export function lastQustionsForFilterAll(type) {
                 },
             ]);
         }
-        else if (type.value === "y") {
+        else if (type.value === String(FilterTypesEnum.Year)) {
             answer = yield inquirer.prompt([
                 {
                     type: "input",
                     name: "value",
-                    message: `Enter the yea, enter ${chalk.bgRed.white.bold("q")} to exit`,
+                    message: `Enter the year, enter ${chalk.bgRed.white.bold("q")} to exit`,
                 },
             ]);
         }
-        else if (type.value === "m") {
+        else if (type.value === String(FilterTypesEnum.Month)) {
             answer = yield inquirer.prompt([
                 {
                     type: "input",
@@ -194,7 +194,7 @@ export function lastQustionsForFilterAll(type) {
                 },
             ]);
         }
-        else if (type.value === "d") {
+        else if (type.value === String(FilterTypesEnum.Day)) {
             answer = yield inquirer.prompt([
                 {
                     type: "input",
@@ -203,7 +203,7 @@ export function lastQustionsForFilterAll(type) {
                 },
             ]);
         }
-        else if (type.value === "h") {
+        else if (type.value === String(FilterTypesEnum.Hour)) {
             answer = yield inquirer.prompt([
                 {
                     type: "input",

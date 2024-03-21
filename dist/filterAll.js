@@ -1,11 +1,13 @@
 import { lastQustionsForFilterAll } from "./cli.js";
 import filterOne from "./filterOne.js";
+import { printTotalProductivityMap } from "./lib.js";
 export default function filterAll(filesToWorkOn, filter = "none", type = "none") {
     Promise.all(filesToWorkOn.map((file) => {
-        filterOne(file, filter, type);
+        return filterOne(file, filter, type);
     }))
-        .then(() => {
+        .then((results) => {
         console.log("\n\n");
+        printTotalProductivityMap(results);
         lastQustionsForFilterAll({ value: type });
     })
         .catch((err) => {

@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import * as fs from "fs";
-import { printProductivityMap, serializeCSVToObject } from "./lib.js";
+import { printTotalProductivityMap, serializeCSVToObject } from "./lib.js";
 import { WORKFILES } from "./constants.js";
 import { calculateOne } from "./calulateOne.js";
 import { app } from "./cli.js";
@@ -24,17 +24,7 @@ export default function calculateAll(filesToWorkOn) {
             });
         });
     }))).then((results) => {
-        const productivityMapArr = results;
-        ;
-        const totalProductivity = new Map();
-        totalProductivity.set("total", 0);
-        productivityMapArr.forEach((productivity) => {
-            productivity.forEach((value) => {
-                var _a;
-                totalProductivity.set("total", ((_a = totalProductivity.get("total")) !== null && _a !== void 0 ? _a : 0) + value);
-            });
-        });
-        printProductivityMap(totalProductivity);
+        printTotalProductivityMap(results);
         app();
     });
 }

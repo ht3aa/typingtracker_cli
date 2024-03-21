@@ -18,12 +18,10 @@ export function getMinsHsDsWsMsYs(seconds: number) {
   return [minutes, hours, days, weeks, months, years];
 }
 
-
-
 export function serializeCSVToObject(lines: Array<string>) {
-  const arr: CSVToObjectType = []
+  const arr: CSVToObjectType = [];
 
-  for(let i = 0; i < lines.length - 1; i++) {
+  for (let i = 0; i < lines.length - 1; i++) {
     const line = lines[i].split(",");
     arr.push({
       year: line[0],
@@ -34,13 +32,12 @@ export function serializeCSVToObject(lines: Array<string>) {
       second: line[5],
       productivitySeconds: line[6],
       path: line[7],
-      commitMsg: line[8]
+      commitMsg: line[8],
     });
   }
 
-  return arr
+  return arr;
 }
-
 
 function formatProductivitySeconds(seconds: number) {
   const years = Math.floor(seconds / (60 * 60 * 24 * 7 * 4 * 12));
@@ -71,4 +68,17 @@ export function printProductivityMap(productivity: Map<string, number>) {
   productivity.forEach((value, key) => {
     console.log(key, " => ", formatProductivitySeconds(value));
   });
+}
+
+export function printTotalProductivityMap(productivityMapArr: Array<Map<string, number>>) {
+  const totalProductivity = new Map();
+  totalProductivity.set("total", 0);
+
+  productivityMapArr.forEach((productivity) => {
+    productivity.forEach((value) => {
+      totalProductivity.set("total", (totalProductivity.get("total") ?? 0) + value);
+    });
+  });
+
+  printProductivityMap(totalProductivity);
 }

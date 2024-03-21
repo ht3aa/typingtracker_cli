@@ -7,6 +7,7 @@ import filterOneAndCalculate from "./filterOneAndCalculate.js";
 import filterOneFromToAndCalculate from "./filterOneFromToAndCalculate.js";
 import { WORKFILES } from "./constants.js";
 import { printProductivityMap, serializeCSVToObject } from "./lib.js";
+import { qustionsForCalculateOne } from "./cli.js";
 
 export function loadCalculateAll() {
   fs.readdir("./workFiles/", (err, files) => {
@@ -29,6 +30,7 @@ export function loadCalculateOneWith(fileName: string) {
     }
     const productivity = calculateOne(serializeCSVToObject(fileData.split("\n")));
     printProductivityMap(productivity);
+    qustionsForCalculateOne()
   });
 }
 
@@ -42,6 +44,7 @@ export function loadFilterAllWith(filterType: string, filter: string) {
     filterAll(files, filter, filterType);
   });
 }
+
 
 export function loadFilterOneFile() {
   if (

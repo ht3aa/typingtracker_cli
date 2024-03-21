@@ -5,7 +5,11 @@
   "main": "index.ts",
   "scripts": {
     "dev": "tsc && node dist/cli.js",
+    "install": "sudo npm install -g ./",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "productivitytracker": "dist/cli.js"
   },
   "author": "",
   "license": "ISC",

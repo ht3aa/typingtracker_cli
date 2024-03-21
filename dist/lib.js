@@ -27,7 +27,7 @@ export function serializeCSVToObject(lines) {
             second: line[5],
             productivitySeconds: line[6],
             path: line[7],
-            commitMsg: line[8]
+            commitMsg: line[8],
         });
     }
     return arr;
@@ -59,4 +59,15 @@ export function printProductivityMap(productivity) {
     productivity.forEach((value, key) => {
         console.log(key, " => ", formatProductivitySeconds(value));
     });
+}
+export function printTotalProductivityMap(productivityMapArr) {
+    const totalProductivity = new Map();
+    totalProductivity.set("total", 0);
+    productivityMapArr.forEach((productivity) => {
+        productivity.forEach((value) => {
+            var _a;
+            totalProductivity.set("total", ((_a = totalProductivity.get("total")) !== null && _a !== void 0 ? _a : 0) + value);
+        });
+    });
+    printProductivityMap(totalProductivity);
 }

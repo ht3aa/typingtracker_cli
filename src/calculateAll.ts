@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import {  printProductivityMap, serializeCSVToObject } from "./lib.js";
+import { printTotalProductivityMap, serializeCSVToObject } from "./lib.js";
 import { WORKFILES } from "./constants.js";
 import { calculateOne } from "./calulateOne.js";
 import { app } from "./cli.js";
@@ -18,19 +18,7 @@ export default function calculateAll(filesToWorkOn: Array<string>) {
       });
     }),
   ).then((results: any) => {
-      const productivityMapArr = results as Array<Map<string, number>>;  ;
-
-      const totalProductivity = new Map();
-      totalProductivity.set("total", 0);
-
-      productivityMapArr.forEach((productivity) => {
-        productivity.forEach((value) => {
-          totalProductivity.set("total", (totalProductivity.get("total") ?? 0) + value);
-        });
-      })
-
-
-    printProductivityMap(totalProductivity);
+    printTotalProductivityMap(results);
     app();
   });
 }
