@@ -3,14 +3,18 @@ export enum FilterTypesEnum {
   Month,
   Day,
   Hour,
-  Minute,
-  Second,
-  Regex,
-  Exit
+  None = "none",
+  Regex = "regex",
 }
 
 
 export enum  FiltersActionEnum {
   FilterAll = "filterAll",
   FilterAllFromTo = "filterAllFromTo",
+}
+
+
+export enum FromToEnum {
+  From = 0,
+  To
 }

@@ -1,4 +1,6 @@
-import { CSVToObjectType } from "./types";
+import * as fs from "fs";
+import { WORKFILES } from "./constants.js";
+import { CSVToObjectType } from "./types.js";
 
 export function addToSum(sums: Array<number>, paths: Array<string>, row: Array<string>) {
   const index = paths.indexOf(row[7]);
@@ -18,8 +20,8 @@ export function getMinsHsDsWsMsYs(seconds: number) {
   return [minutes, hours, days, weeks, months, years];
 }
 
-export function serializeCSVToObject(lines: Array<string>) {
-  const arr: CSVToObjectType = [];
+export function serializeCSVsToObjects(lines: Array<string>) {
+  const arr: Array<CSVToObjectType> = [];
 
   for (let i = 0; i < lines.length - 1; i++) {
     const line = lines[i].split(",");
@@ -37,6 +39,18 @@ export function serializeCSVToObject(lines: Array<string>) {
   }
 
   return arr;
+}
+
+export function serializeObjectToCSV(line: CSVToObjectType) {
+  return `${line.year},${line.month},${line.day},${line.hour},${line.minute},${line.second},${line.productivitySeconds},${line.path},${line.commitMsg}`;
+}
+
+export function serializeObjectsToCSV(arr: Array<CSVToObjectType>) {
+  let csv: Array<string> = [];
+  arr.forEach((line) => {
+    csv.push(serializeObjectToCSV(line));
+  });
+  return csv;
 }
 
 function formatProductivitySeconds(seconds: number) {
@@ -95,4 +109,31 @@ export function filterLinesFn(lines: Array<string>, index: any, filter: string |
   }
 
   return lines.filter((line) => line.split(",")[index] === filter);
+}
+
+export async function getAllLinesFromFiles(): Promise<Array<string>> {
+  return new Promise((resolve) => {
+    fs.readdir(WORKFILES, async (err, files) => {
+      if (err) {
+        console.error("Error reading directory:", err);
+        return;
+      }
+
+      const lines = await Promise.all(
+        files.map((file) => {
+          return new Promise((resolve) => {
+            fs.readFile(WORKFILES + file, "utf8", (err, fileData) => {
+              if (err) {
+                console.error("Error occurred while reading the CSV file:", err);
+                return;
+              }
+
+              resolve(fileData.trim().split("\n"));
+            });
+          });
+        }),
+      );
+      resolve(lines.flat() as Array<string>);
+    });
+  });
 }

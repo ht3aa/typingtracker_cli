@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import { WORKFILES } from "./constants.js";
 import { calculateOne } from "./calulateOne.js";
-import { serializeCSVToObject } from "./lib.js";
+import { serializeCSVsToObjects } from "./lib.js";
 import { FilterFnType } from "./types.js";
 
 function filterLines(lines: Array<string>, index: any, filter: string) {
@@ -53,9 +53,9 @@ export default function filterOne(
       //   printFilterdLines(lines, type, filter, filterFn);
       // }
 
-      const productivity = calculateOne(serializeCSVToObject(filterdLines));
+      // const productivity = calculateOne(serializeCSVToObject(filterdLines));
 
-      resolve({filterdLines, productivity});
+      // resolve({filterdLines, productivity});
     });
   });
 }

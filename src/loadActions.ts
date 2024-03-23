@@ -4,9 +4,21 @@ import { calculateOne } from "./calulateOne.js";
 import filterAll from "./filterAll.js";
 import filterOne from "./filterOne.js";
 import { WORKFILES } from "./constants.js";
-import { filterLinesFn, printProductivityMap, serializeCSVToObject } from "./lib.js";
-import { qustionsForCalculateOne } from "./cli.js";
+import {
+  filterLinesFn,
+  getAllLinesFromFiles,
+  printProductivityMap,
+  printTotalProductivityMap,
+  serializeCSVsToObjects,
+  serializeObjectsToCSV,
+} from "./lib.js";
+import {
+  lastQustionsForFilterAll,
+  lastQustionsForFilterAllFromTo,
+  qustionsForCalculateOne,
+} from "./cli.js";
 import filterAllFromTo from "./filterAllFromTo.js";
+import { CSVToObjectType, FilterTypes } from "./types.js";
 
 export function loadCalculateAll() {
   fs.readdir("./workFiles/", (err, files) => {
@@ -27,21 +39,24 @@ export function loadCalculateOneWith(fileName: string) {
       console.error("Error occurred while reading the CSV file:", err);
       return;
     }
-    const productivity = calculateOne(serializeCSVToObject(fileData.split("\n")));
+    const productivity = calculateOne(serializeCSVsToObjects(fileData.split("\n")));
     printProductivityMap(productivity);
     qustionsForCalculateOne();
   });
 }
 
-export function loadFilterAllWith(filterType: string, filter: string) {
-  fs.readdir(WORKFILES, (err, files) => {
-    if (err) {
-      console.error("Error reading directory:", err);
-      return;
-    }
+export async function loadFilterAllWith(filterType: FilterTypes, filter: string) {
+  const lines = await getAllLinesFromFiles();
+  const filterdLines = filterAll(lines, filter, filterType);
+  const productivity = calculateOne(serializeCSVsToObjects(filterdLines));
 
-    filterAll(files, filter, filterType);
+  filterdLines.forEach((line: string, index: number) => {
+    console.log(`Line ${index}: ${line}`);
   });
+
+  printTotalProductivityMap([productivity]);
+
+  lastQustionsForFilterAll({ value: filterType });
 }
 
 export function loadFilterOneFile() {
@@ -57,13 +72,17 @@ export function loadFilterOneFile() {
   }
 }
 
-export function loadFilterAllFromToWith(filterType: string, filter: string) {
-  fs.readdir(WORKFILES, (err, files) => {
-    if (err) {
-      console.error("Error reading directory:", err);
-      return;
-    }
+export async function loadFilterAllFromToWith(filterType: FilterTypes, filter: string) {
+  const lines = await getAllLinesFromFiles();
 
-    filterAllFromTo(files, filter.split("*"), filterType);
+  const filterdLines = filterAllFromTo(lines, filter.split("*"), filterType);
+  const productivity = calculateOne(serializeCSVsToObjects(filterdLines));
+
+  filterdLines.forEach((line: string, index: number) => {
+    console.log(`Line ${index}: ${line}`);
   });
+
+  printTotalProductivityMap([productivity]);
+
+  lastQustionsForFilterAllFromTo({ value: filterType });
 }

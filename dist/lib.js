@@ -1,3 +1,14 @@
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+import * as fs from "fs";
+import { WORKFILES } from "./constants.js";
 export function addToSum(sums, paths, row) {
     const index = paths.indexOf(row[7]);
     if (sums[index] === undefined) {
@@ -14,7 +25,7 @@ export function getMinsHsDsWsMsYs(seconds) {
     const years = Math.floor(months / 12);
     return [minutes, hours, days, weeks, months, years];
 }
-export function serializeCSVToObject(lines) {
+export function serializeCSVsToObjects(lines) {
     const arr = [];
     for (let i = 0; i < lines.length - 1; i++) {
         const line = lines[i].split(",");
@@ -31,6 +42,16 @@ export function serializeCSVToObject(lines) {
         });
     }
     return arr;
+}
+export function serializeObjectToCSV(line) {
+    return `${line.year},${line.month},${line.day},${line.hour},${line.minute},${line.second},${line.productivitySeconds},${line.path},${line.commitMsg}`;
+}
+export function serializeObjectsToCSV(arr) {
+    let csv = [];
+    arr.forEach((line) => {
+        csv.push(serializeObjectToCSV(line));
+    });
+    return csv;
 }
 function formatProductivitySeconds(seconds) {
     const years = Math.floor(seconds / (60 * 60 * 24 * 7 * 4 * 12));
@@ -83,4 +104,28 @@ export function filterLinesFn(lines, index, filter) {
         });
     }
     return lines.filter((line) => line.split(",")[index] === filter);
+}
+export function getAllLinesFromFiles() {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve) => {
+            fs.readdir(WORKFILES, (err, files) => __awaiter(this, void 0, void 0, function* () {
+                if (err) {
+                    console.error("Error reading directory:", err);
+                    return;
+                }
+                const lines = yield Promise.all(files.map((file) => {
+                    return new Promise((resolve) => {
+                        fs.readFile(WORKFILES + file, "utf8", (err, fileData) => {
+                            if (err) {
+                                console.error("Error occurred while reading the CSV file:", err);
+                                return;
+                            }
+                            resolve(fileData.trim().split("\n"));
+                        });
+                    });
+                }));
+                resolve(lines.flat());
+            }));
+        });
+    });
 }

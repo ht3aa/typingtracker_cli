@@ -11,7 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import chalk from "chalk";
 import inquirer from "inquirer";
 import * as fs from "fs";
-import { loadCalculateAll, loadCalculateOneWith, loadFilterAllFromToWith, loadFilterAllWith } from "./loadActions.js";
+import { loadCalculateAll, loadCalculateOneWith, loadFilterAllFromToWith, loadFilterAllWith, } from "./loadActions.js";
 import { WORKFILES } from "./constants.js";
 import { FilterTypesEnum, FiltersActionEnum } from "./enums.js";
 console.log(chalk.bgBlue.white.bold(" Welcome to Productivity Tracker (Made by www.hasanweb.tech) \n\n"));
@@ -62,13 +62,13 @@ export function app() {
         else if (answer.action === "calculateOne") {
             qustionsForCalculateOne();
         }
-        else if (answer.action === "filterAll") {
+        else if (answer.action === FiltersActionEnum.FilterAll) {
             questionsForFilters(FiltersActionEnum.FilterAll);
         }
         else if (answer.action === "filterOne") {
             // filterOne();
         }
-        else if (answer.action === "filterAllFromTo") {
+        else if (answer.action === FiltersActionEnum.FilterAllFromTo) {
             questionsForFilters(FiltersActionEnum.FilterAllFromTo);
         }
         else if (answer.action === "filterOneFromToAndCalculate") {
@@ -121,22 +121,22 @@ export function questionsForFilters(filterAction) {
                     },
                     {
                         name: "year",
-                        value: "0",
+                        value: 0,
                         short: "You Chose year",
                     },
                     {
                         name: "month",
-                        value: "1",
+                        value: 1,
                         short: "You Chose month",
                     },
                     {
                         name: "day",
-                        value: "2",
+                        value: 2,
                         short: "You Chose day",
                     },
                     {
                         name: "hour",
-                        value: "3",
+                        value: 3,
                         short: "You Chose hour",
                     },
                     {
@@ -151,10 +151,10 @@ export function questionsForFilters(filterAction) {
         if (type.value === "Exit") {
             app();
         }
-        else if (filterAction === "filterAll") {
+        else if (filterAction === FiltersActionEnum.FilterAll) {
             lastQustionsForFilterAll(type);
         }
-        else if (filterAction === "filterAllFromTo") {
+        else if (filterAction === FiltersActionEnum.FilterAllFromTo) {
             lastQustionsForFilterAllFromTo(type);
         }
     });
@@ -174,7 +174,7 @@ export function lastQustionsForFilterAll(type) {
                 },
             ]);
         }
-        else if (type.value === String(FilterTypesEnum.Year)) {
+        else if (type.value === FilterTypesEnum.Year) {
             answer = yield inquirer.prompt([
                 {
                     type: "input",
@@ -183,7 +183,7 @@ export function lastQustionsForFilterAll(type) {
                 },
             ]);
         }
-        else if (type.value === String(FilterTypesEnum.Month)) {
+        else if (type.value === FilterTypesEnum.Month) {
             answer = yield inquirer.prompt([
                 {
                     type: "input",
@@ -192,7 +192,7 @@ export function lastQustionsForFilterAll(type) {
                 },
             ]);
         }
-        else if (type.value === String(FilterTypesEnum.Day)) {
+        else if (type.value === FilterTypesEnum.Day) {
             answer = yield inquirer.prompt([
                 {
                     type: "input",
@@ -201,7 +201,7 @@ export function lastQustionsForFilterAll(type) {
                 },
             ]);
         }
-        else if (type.value === String(FilterTypesEnum.Hour)) {
+        else if (type.value === FilterTypesEnum.Hour) {
             answer = yield inquirer.prompt([
                 {
                     type: "input",
@@ -224,7 +224,7 @@ export function lastQustionsForFilterAllFromTo(type) {
         if (type.value === "Exit") {
             app();
         }
-        else if (type.value === "regex") {
+        else if (type.value === FilterTypesEnum.Regex) {
             answer = yield inquirer.prompt([
                 {
                     type: "input",
@@ -233,7 +233,7 @@ export function lastQustionsForFilterAllFromTo(type) {
                 },
             ]);
         }
-        else if (type.value === String(FilterTypesEnum.Year)) {
+        else if (type.value === FilterTypesEnum.Year) {
             answer = yield inquirer.prompt([
                 {
                     type: "input",
@@ -242,7 +242,7 @@ export function lastQustionsForFilterAllFromTo(type) {
                 },
             ]);
         }
-        else if (type.value === String(FilterTypesEnum.Month)) {
+        else if (type.value === FilterTypesEnum.Month) {
             answer = yield inquirer.prompt([
                 {
                     type: "input",
@@ -251,7 +251,7 @@ export function lastQustionsForFilterAllFromTo(type) {
                 },
             ]);
         }
-        else if (type.value === String(FilterTypesEnum.Day)) {
+        else if (type.value === FilterTypesEnum.Day) {
             answer = yield inquirer.prompt([
                 {
                     type: "input",
@@ -260,7 +260,7 @@ export function lastQustionsForFilterAllFromTo(type) {
                 },
             ]);
         }
-        else if (type.value === String(FilterTypesEnum.Hour)) {
+        else if (type.value === FilterTypesEnum.Hour) {
             answer = yield inquirer.prompt([
                 {
                     type: "input",

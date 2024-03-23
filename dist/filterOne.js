@@ -1,7 +1,5 @@
 import * as fs from "fs";
 import { WORKFILES } from "./constants.js";
-import { calculateOne } from "./calulateOne.js";
-import { serializeCSVToObject } from "./lib.js";
 function filterLines(lines, index, filter) {
     if (index === "none") {
         return lines;
@@ -36,9 +34,8 @@ export default function filterOne(fileToWorkOn, filter, type = "none", filterFn)
             // } else {
             //   printFilterdLines(lines, type, filter, filterFn);
             // }
-            const filterdLines = filterFn(lines, type, filter);
-            const productivity = calculateOne(serializeCSVToObject(filterdLines));
-            resolve({ filterdLines, productivity });
+            // const productivity = calculateOne(serializeCSVToObject(filterdLines));
+            // resolve({filterdLines, productivity});
         });
     });
 }
