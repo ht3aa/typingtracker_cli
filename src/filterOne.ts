@@ -2,6 +2,7 @@ import * as fs from "fs";
 import { WORKFILES } from "./constants.js";
 import { calculateOne } from "./calulateOne.js";
 import { serializeCSVToObject } from "./lib.js";
+import { FilterFnType } from "./types.js";
 
 function filterLines(lines: Array<string>, index: any, filter: string) {
   if (index === "none") {
@@ -9,7 +10,7 @@ function filterLines(lines: Array<string>, index: any, filter: string) {
   } else if (index === "regex") {
     return lines.filter((line) => {
       if (line.match(filter)) {
-        return;
+        return true;
       }
     });
   }
@@ -17,13 +18,27 @@ function filterLines(lines: Array<string>, index: any, filter: string) {
   return lines.filter((line) => line.split(",")[index] === filter);
 }
 
-function printFilterdLines(lines: Array<string>, index: any, filter: string) {
-  filterLines(lines, index, filter).forEach((line, i) => {
+function printFilterdLines(
+  lines: Array<string>,
+  index: any,
+  filter: string | Array<string>,
+  filterFn: FilterFnType,
+) {
+  // filterLines(lines, index, filter).forEach((line, i) => {
+  //   console.log(`Line ${i}: ${line}`);
+  // });
+
+  filterFn(lines, index, filter).forEach((line, i) => {
     console.log(`Line ${i}: ${line}`);
   });
 }
 
-export default function filterOne(fileToWorkOn: string, filter = "none", type = "none") {
+export default function filterOne(
+  fileToWorkOn: string,
+  filter: string | Array<string>,
+  type = "none",
+  filterFn: FilterFnType,
+): Promise<{ lines: Array<string>; productivity: Map<string, number> }> {
   return new Promise((resolve) => {
     fs.readFile(WORKFILES + fileToWorkOn, "utf8", (err, fileData) => {
       if (err) {
@@ -32,15 +47,15 @@ export default function filterOne(fileToWorkOn: string, filter = "none", type = 
       }
 
       const lines = fileData.trim().split("\n");
-      if (filter === "none") {
-        printFilterdLines(lines, "none", filter);
-      } else {
-        printFilterdLines(lines, type, filter);
-      }
+      // if (filter === "none") {
+      //   printFilterdLines(lines, "none", filter, filterFn);
+      // } else {
+      //   printFilterdLines(lines, type, filter, filterFn);
+      // }
 
-      const productivity = calculateOne(serializeCSVToObject(filterLines(lines, type, filter)));
+      const productivity = calculateOne(serializeCSVToObject(filterdLines));
 
-      resolve(productivity)
+      resolve({filterdLines, productivity});
     });
   });
 }

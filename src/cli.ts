@@ -2,9 +2,9 @@
 import chalk from "chalk";
 import inquirer from "inquirer";
 import * as fs from "fs";
-import { loadCalculateAll, loadCalculateOneWith, loadFilterAllWith } from "./loadActions.js";
+import { loadCalculateAll, loadCalculateOneWith, loadFilterAllFromToWith, loadFilterAllWith } from "./loadActions.js";
 import { WORKFILES } from "./constants.js";
-import { FilterTypesEnum } from "./enums.js";
+import { FilterTypesEnum, FiltersActionEnum } from "./enums.js";
 
 console.log(
   chalk.bgBlue.white.bold(" Welcome to Productivity Tracker (Made by www.hasanweb.tech) \n\n"),
@@ -44,14 +44,9 @@ export async function app() {
           short: "You Chose filter one",
         },
         {
-          name: "filter one and calculate",
-          value: "filterOneAndCalculate",
-          short: "You Chose filter one and calculate",
-        },
-        {
-          name: "filter one from to and calculate",
-          value: "filterOneFromToAndCalculate",
-          short: "You Chose filter one from to and calculate",
+          name: "filter all from to",
+          value: "filterAllFromTo",
+          short: "You Chose filter all from to",
         },
       ],
     },
@@ -62,11 +57,11 @@ export async function app() {
   } else if (answer.action === "calculateOne") {
     qustionsForCalculateOne();
   } else if (answer.action === "filterAll") {
-    qustionsForFilterAll();
+    questionsForFilters(FiltersActionEnum.FilterAll);
   } else if (answer.action === "filterOne") {
     // filterOne();
-  } else if (answer.action === "filterOneAndCalculate") {
-    // filterOneAndCalculate();
+  } else if (answer.action === "filterAllFromTo") {
+    questionsForFilters(FiltersActionEnum.FilterAllFromTo);
   } else if (answer.action === "filterOneFromToAndCalculate") {
     // filterOneFromToAndCalculate();
   }
@@ -105,7 +100,7 @@ export function qustionsForCalculateOne() {
   });
 }
 
-export async function qustionsForFilterAll() {
+export async function questionsForFilters(filterAction: string) {
   const type = await inquirer.prompt([
     {
       type: "list",
@@ -149,8 +144,10 @@ export async function qustionsForFilterAll() {
 
   if (type.value === "Exit") {
     app();
-  } else {
+  } else if (filterAction === "filterAll") {
     lastQustionsForFilterAll(type);
+  } else if (filterAction === "filterAllFromTo") {
+    lastQustionsForFilterAllFromTo(type);
   }
 }
 
@@ -204,16 +201,68 @@ export async function lastQustionsForFilterAll(type: any) {
   }
 
   if (answer.value === "q") {
-    qustionsForFilterAll();
+    questionsForFilters(FiltersActionEnum.FilterAll);
   } else {
     loadFilterAllWith(type.value, answer.value);
   }
 }
 
+export async function lastQustionsForFilterAllFromTo(type: any) {
+  let answer = { value: "none" };
 
+  if (type.value === "Exit") {
+    app();
+  } else if (type.value === "regex") {
+    answer = await inquirer.prompt([
+      {
+        type: "input",
+        name: "value",
+        message: `Enter regex value From*to (Note: Add , to the end of the value except for path filters, enter ${chalk.bgRed.white.bold(
+          "q",
+        )} to exit`,
+      },
+    ]);
+  } else if (type.value === String(FilterTypesEnum.Year)) {
+    answer = await inquirer.prompt([
+      {
+        type: "input",
+        name: "value",
+        message: `Enter the year From*to, enter ${chalk.bgRed.white.bold("q")} to exit`,
+      },
+    ]);
+  } else if (type.value === String(FilterTypesEnum.Month)) {
+    answer = await inquirer.prompt([
+      {
+        type: "input",
+        name: "value",
+        message: `Enter the month From*to, enter ${chalk.bgRed.white.bold("q")} to exit`,
+      },
+    ]);
+  } else if (type.value === String(FilterTypesEnum.Day)) {
+    answer = await inquirer.prompt([
+      {
+        type: "input",
+        name: "value",
+        message: `Enter the day From*to, enter ${chalk.bgRed.white.bold("q")} to exit`,
+      },
+    ]);
+  } else if (type.value === String(FilterTypesEnum.Hour)) {
+    answer = await inquirer.prompt([
+      {
+        type: "input",
+        name: "value",
+        message: `Enter the hour From*to, enter ${chalk.bgRed.white.bold("q")} to exit`,
+      },
+    ]);
+  }
 
-export function qustionsForFilterOne() {
-
+  if (answer.value === "q") {
+    questionsForFilters(FiltersActionEnum.FilterAllFromTo);
+  } else {
+    loadFilterAllFromToWith(type.value, answer.value);
+  }
 }
+
+export function qustionsForFilterOne() {}
 
 app();

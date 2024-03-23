@@ -11,3 +11,5 @@ export type CSVToObjectType = Array<{
 }>;
 
 export type ProductivityType = Map<string, number>;
+export type FilterFnType = (lines: Array<string>, index: any, filter: string | Array<string>) => Array<string>;
+export type FilterOneReturnType ={ filterdLines: Array<string>; productivity: Map<string, number> }

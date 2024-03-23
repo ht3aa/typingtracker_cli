@@ -11,9 +11,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import chalk from "chalk";
 import inquirer from "inquirer";
 import * as fs from "fs";
-import { loadCalculateAll, loadCalculateOneWith, loadFilterAllWith } from "./loadActions.js";
+import { loadCalculateAll, loadCalculateOneWith, loadFilterAllFromToWith, loadFilterAllWith } from "./loadActions.js";
 import { WORKFILES } from "./constants.js";
-import { FilterTypesEnum } from "./enums.js";
+import { FilterTypesEnum, FiltersActionEnum } from "./enums.js";
 console.log(chalk.bgBlue.white.bold(" Welcome to Productivity Tracker (Made by www.hasanweb.tech) \n\n"));
 const exitOption = {
     name: chalk.bgRed.white.bold("Exit"),
@@ -49,14 +49,9 @@ export function app() {
                         short: "You Chose filter one",
                     },
                     {
-                        name: "filter one and calculate",
-                        value: "filterOneAndCalculate",
-                        short: "You Chose filter one and calculate",
-                    },
-                    {
-                        name: "filter one from to and calculate",
-                        value: "filterOneFromToAndCalculate",
-                        short: "You Chose filter one from to and calculate",
+                        name: "filter all from to",
+                        value: "filterAllFromTo",
+                        short: "You Chose filter all from to",
                     },
                 ],
             },
@@ -68,13 +63,13 @@ export function app() {
             qustionsForCalculateOne();
         }
         else if (answer.action === "filterAll") {
-            qustionsForFilterAll();
+            questionsForFilters(FiltersActionEnum.FilterAll);
         }
         else if (answer.action === "filterOne") {
             // filterOne();
         }
-        else if (answer.action === "filterOneAndCalculate") {
-            // filterOneAndCalculate();
+        else if (answer.action === "filterAllFromTo") {
+            questionsForFilters(FiltersActionEnum.FilterAllFromTo);
         }
         else if (answer.action === "filterOneFromToAndCalculate") {
             // filterOneFromToAndCalculate();
@@ -111,7 +106,7 @@ export function qustionsForCalculateOne() {
         }
     }));
 }
-export function qustionsForFilterAll() {
+export function questionsForFilters(filterAction) {
     return __awaiter(this, void 0, void 0, function* () {
         const type = yield inquirer.prompt([
             {
@@ -156,8 +151,11 @@ export function qustionsForFilterAll() {
         if (type.value === "Exit") {
             app();
         }
-        else {
+        else if (filterAction === "filterAll") {
             lastQustionsForFilterAll(type);
+        }
+        else if (filterAction === "filterAllFromTo") {
+            lastQustionsForFilterAllFromTo(type);
         }
     });
 }
@@ -213,13 +211,71 @@ export function lastQustionsForFilterAll(type) {
             ]);
         }
         if (answer.value === "q") {
-            qustionsForFilterAll();
+            questionsForFilters(FiltersActionEnum.FilterAll);
         }
         else {
             loadFilterAllWith(type.value, answer.value);
         }
     });
 }
-export function qustionsForFilterOne() {
+export function lastQustionsForFilterAllFromTo(type) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let answer = { value: "none" };
+        if (type.value === "Exit") {
+            app();
+        }
+        else if (type.value === "regex") {
+            answer = yield inquirer.prompt([
+                {
+                    type: "input",
+                    name: "value",
+                    message: `Enter regex value From*to (Note: Add , to the end of the value except for path filters, enter ${chalk.bgRed.white.bold("q")} to exit`,
+                },
+            ]);
+        }
+        else if (type.value === String(FilterTypesEnum.Year)) {
+            answer = yield inquirer.prompt([
+                {
+                    type: "input",
+                    name: "value",
+                    message: `Enter the year From*to, enter ${chalk.bgRed.white.bold("q")} to exit`,
+                },
+            ]);
+        }
+        else if (type.value === String(FilterTypesEnum.Month)) {
+            answer = yield inquirer.prompt([
+                {
+                    type: "input",
+                    name: "value",
+                    message: `Enter the month From*to, enter ${chalk.bgRed.white.bold("q")} to exit`,
+                },
+            ]);
+        }
+        else if (type.value === String(FilterTypesEnum.Day)) {
+            answer = yield inquirer.prompt([
+                {
+                    type: "input",
+                    name: "value",
+                    message: `Enter the day From*to, enter ${chalk.bgRed.white.bold("q")} to exit`,
+                },
+            ]);
+        }
+        else if (type.value === String(FilterTypesEnum.Hour)) {
+            answer = yield inquirer.prompt([
+                {
+                    type: "input",
+                    name: "value",
+                    message: `Enter the hour From*to, enter ${chalk.bgRed.white.bold("q")} to exit`,
+                },
+            ]);
+        }
+        if (answer.value === "q") {
+            questionsForFilters(FiltersActionEnum.FilterAllFromTo);
+        }
+        else {
+            loadFilterAllFromToWith(type.value, answer.value);
+        }
+    });
 }
+export function qustionsForFilterOne() { }
 app();

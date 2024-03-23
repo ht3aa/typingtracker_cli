@@ -82,3 +82,17 @@ export function printTotalProductivityMap(productivityMapArr: Array<Map<string, 
 
   printProductivityMap(totalProductivity);
 }
+
+export function filterLinesFn(lines: Array<string>, index: any, filter: string | Array<string>) {
+  if (index === "none") {
+    return lines;
+  } else if (index === "regex") {
+    return lines.filter((line) => {
+      if (line.match(filter as string)) {
+        return true;
+      }
+    });
+  }
+
+  return lines.filter((line) => line.split(",")[index] === filter);
+}

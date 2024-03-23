@@ -1,16 +1,20 @@
 import { lastQustionsForFilterAll } from "./cli.js";
 import filterOne from "./filterOne.js";
-import { printTotalProductivityMap } from "./lib.js";
+import { filterLinesFn, printTotalProductivityMap } from "./lib.js";
+import { FilterOneReturnType } from "./types.js";
 
 export default function filterAll(filesToWorkOn: Array<string>, filter = "none", type = "none") {
   Promise.all(
     filesToWorkOn.map((file) => {
-      return filterOne(file, filter, type);
+      return filterOne(file, filter, type, filterLinesFn);
     }),
   )
-    .then((results: any) => {
-      console.log("\n\n")
-      printTotalProductivityMap(results as Array<Map<string, number>>);
+    .then((results) => {
+      console.log("\n\n");
+      const productivities = results.map((result) => result.productivity);
+      const lines = results.map((result) => result.filterdLines);
+      lines.sort().flat().forEach((line, index) => console.log(`Line ${index}: ${line}`));
+      printTotalProductivityMap(productivities);
       lastQustionsForFilterAll({ value: type });
     })
     .catch((err) => {

@@ -71,3 +71,16 @@ export function printTotalProductivityMap(productivityMapArr) {
     });
     printProductivityMap(totalProductivity);
 }
+export function filterLinesFn(lines, index, filter) {
+    if (index === "none") {
+        return lines;
+    }
+    else if (index === "regex") {
+        return lines.filter((line) => {
+            if (line.match(filter)) {
+                return true;
+            }
+        });
+    }
+    return lines.filter((line) => line.split(",")[index] === filter);
+}

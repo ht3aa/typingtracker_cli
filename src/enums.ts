@@ -9,3 +9,8 @@ export enum FilterTypesEnum {
   Exit
 }
 
+
+export enum  FiltersActionEnum {
+  FilterAll = "filterAll",
+  FilterAllFromTo = "filterAllFromTo",
+}

@@ -9,3 +9,8 @@ export var FilterTypesEnum;
     FilterTypesEnum[FilterTypesEnum["Regex"] = 6] = "Regex";
     FilterTypesEnum[FilterTypesEnum["Exit"] = 7] = "Exit";
 })(FilterTypesEnum || (FilterTypesEnum = {}));
+export var FiltersActionEnum;
+(function (FiltersActionEnum) {
+    FiltersActionEnum["FilterAll"] = "filterAll";
+    FiltersActionEnum["FilterAllFromTo"] = "filterAllFromTo";
+})(FiltersActionEnum || (FiltersActionEnum = {}));

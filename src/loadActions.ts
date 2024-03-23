@@ -3,11 +3,10 @@ import calculateAll from "./calculateAll.js";
 import { calculateOne } from "./calulateOne.js";
 import filterAll from "./filterAll.js";
 import filterOne from "./filterOne.js";
-import filterOneAndCalculate from "./filterOneAndCalculate.js";
-import filterOneFromToAndCalculate from "./filterOneFromToAndCalculate.js";
 import { WORKFILES } from "./constants.js";
-import { printProductivityMap, serializeCSVToObject } from "./lib.js";
+import { filterLinesFn, printProductivityMap, serializeCSVToObject } from "./lib.js";
 import { qustionsForCalculateOne } from "./cli.js";
+import filterAllFromTo from "./filterAllFromTo.js";
 
 export function loadCalculateAll() {
   fs.readdir("./workFiles/", (err, files) => {
@@ -30,7 +29,7 @@ export function loadCalculateOneWith(fileName: string) {
     }
     const productivity = calculateOne(serializeCSVToObject(fileData.split("\n")));
     printProductivityMap(productivity);
-    qustionsForCalculateOne()
+    qustionsForCalculateOne();
   });
 }
 
@@ -45,13 +44,12 @@ export function loadFilterAllWith(filterType: string, filter: string) {
   });
 }
 
-
 export function loadFilterOneFile() {
   if (
     (process.argv[2] !== undefined && process.argv[3] !== undefined, process.argv[4] !== undefined)
   ) {
     const fileToWorkOn = "./" + process.argv[2];
-    filterOne(fileToWorkOn, process.argv[3], process.argv[4]);
+    filterOne(fileToWorkOn, process.argv[3], process.argv[4], filterLinesFn);
   } else {
     console.log(
       "Please enter a file name in the current directory, and an optional uniqueBy and filterType \n Example: node filterOne.js <fileToWorkOn, required> <filter, 2020, 12, 17 or none> <filterType, y,m,d,h or none>",
@@ -59,28 +57,13 @@ export function loadFilterOneFile() {
   }
 }
 
-export function loadFilterOneAndCalculate() {
-  if (
-    (process.argv[2] !== undefined && process.argv[3] !== undefined, process.argv[4] !== undefined)
-  ) {
-    const fileToWorkOn = WORKFILES + process.argv[2];
-    filterOneAndCalculate(fileToWorkOn, process.argv[3], process.argv[4]);
-  } else {
-    console.log(
-      "Please enter a file name in the current directory, and an optional uniqueBy and filterType \n Example: node getYMDHourOne.js <fileToWorkOn, required> <filter, 2020, 12, 17 or none> <filterType, y,m,d,h or none>",
-    );
-  }
-}
+export function loadFilterAllFromToWith(filterType: string, filter: string) {
+  fs.readdir(WORKFILES, (err, files) => {
+    if (err) {
+      console.error("Error reading directory:", err);
+      return;
+    }
 
-export function loadFilterOneFromToAndCalculate() {
-  if (
-    (process.argv[2] !== undefined && process.argv[3] !== undefined, process.argv[4] !== undefined)
-  ) {
-    const fileToWorkOn = WORKFILES + process.argv[2];
-    filterOneFromToAndCalculate(fileToWorkOn, process.argv[3], process.argv[4]);
-  } else {
-    console.log(
-      "Please enter a file name in the current directory, and an optional uniqueBy and filterType \n Example: node getYMDHourOne.js <fileToWorkOn, required> <filterType, y,m,d,h or none> <From index, number> <To index, number>",
-    );
-  }
+    filterAllFromTo(files, filter.split("*"), filterType);
+  });
 }

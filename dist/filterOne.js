@@ -9,18 +9,21 @@ function filterLines(lines, index, filter) {
     else if (index === "regex") {
         return lines.filter((line) => {
             if (line.match(filter)) {
-                return;
+                return true;
             }
         });
     }
     return lines.filter((line) => line.split(",")[index] === filter);
 }
-function printFilterdLines(lines, index, filter) {
-    filterLines(lines, index, filter).forEach((line, i) => {
+function printFilterdLines(lines, index, filter, filterFn) {
+    // filterLines(lines, index, filter).forEach((line, i) => {
+    //   console.log(`Line ${i}: ${line}`);
+    // });
+    filterFn(lines, index, filter).forEach((line, i) => {
         console.log(`Line ${i}: ${line}`);
     });
 }
-export default function filterOne(fileToWorkOn, filter = "none", type = "none") {
+export default function filterOne(fileToWorkOn, filter, type = "none", filterFn) {
     return new Promise((resolve) => {
         fs.readFile(WORKFILES + fileToWorkOn, "utf8", (err, fileData) => {
             if (err) {
@@ -28,14 +31,14 @@ export default function filterOne(fileToWorkOn, filter = "none", type = "none") 
                 return;
             }
             const lines = fileData.trim().split("\n");
-            if (filter === "none") {
-                printFilterdLines(lines, "none", filter);
-            }
-            else {
-                printFilterdLines(lines, type, filter);
-            }
-            const productivity = calculateOne(serializeCSVToObject(filterLines(lines, type, filter)));
-            resolve(productivity);
+            // if (filter === "none") {
+            //   printFilterdLines(lines, "none", filter, filterFn);
+            // } else {
+            //   printFilterdLines(lines, type, filter, filterFn);
+            // }
+            const filterdLines = filterFn(lines, type, filter);
+            const productivity = calculateOne(serializeCSVToObject(filterdLines));
+            resolve({ filterdLines, productivity });
         });
     });
 }
