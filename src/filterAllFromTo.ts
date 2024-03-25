@@ -1,5 +1,4 @@
 import { FilterTypesEnum, FromToEnum } from "./enums.js";
-import { sortData } from "./lib.js";
 import { FilterIndexType, FilterTypesType } from "./types.js";
 
 export default function filterAllFromTo(
@@ -10,9 +9,6 @@ export default function filterAllFromTo(
   if (type === FilterTypesEnum.None) {
     return lines;
   } else if (type === FilterTypesEnum.Regex) {
-
-    sortData(lines);
-
     const splittedFromFilter = filter[FromToEnum.From].split(",");
     const splittedToFilter = filter[FromToEnum.To].split(",");
 
@@ -28,7 +24,6 @@ export default function filterAllFromTo(
         })
       );
     });
-
   }
 
   return lines.filter((line: string) => {
@@ -38,5 +33,4 @@ export default function filterAllFromTo(
       parseInt(splittedLine[type as FilterIndexType]) <= parseInt(filter[FromToEnum.To])
     );
   });
-
 }

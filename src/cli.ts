@@ -6,6 +6,7 @@ import {
   loadCalculateOneWith,
   loadFilterAllFromToWith,
   loadFilterAllWith,
+  loadFilterOne,
 } from "./loadActions.js";
 import { WORKDATADIR, EXISTOPTION } from "./constants.js";
 import { ActionsEnum, FilterTypesEnum } from "./enums.js";
@@ -40,7 +41,7 @@ export async function app() {
         },
         {
           name: "filter one",
-          value: "FilterOne",
+          value: "filterOne",
           short: "You Chose filter one",
         },
         {
@@ -56,17 +57,19 @@ export async function app() {
   if (answer.action === ActionsEnum.CalculateAll) {
     loadCalculateAll();
   } else if (answer.action === ActionsEnum.CalculateOne) {
-    qustionsForCalculateOne();
+    getFilesForAction(ActionsEnum.CalculateOne);
   } else if (answer.action === ActionsEnum.FilterAll) {
     questionsForFilters(ActionsEnum.FilterAll);
   } else if (answer.action === ActionsEnum.FilterOne) {
-    // filterOne();
+    getFilesForAction(ActionsEnum.FilterOne);
   } else if (answer.action === ActionsEnum.FilterAllFromTo) {
     questionsForFilters(ActionsEnum.FilterAllFromTo);
   }
+
 }
 
-export async function qustionsForCalculateOne() {
+export async function getFilesForAction(action: string) {
+
   const files = await getFilesNameFromDir(WORKDATADIR);
 
   const answer = await inquirer.prompt([
@@ -87,12 +90,14 @@ export async function qustionsForCalculateOne() {
 
   if (answer.action === ActionsEnum.Exit) {
     app();
-  } else {
+  } else if(action === ActionsEnum.CalculateOne) {
     loadCalculateOneWith(answer.action);
+  } else if (action === ActionsEnum.FilterOne) {
+    questionsForFilters(ActionsEnum.FilterOne, answer.action);
   }
 }
 
-export async function questionsForFilters(filterAction: string) {
+export async function questionsForFilters(filterAction: string, fileName?: string) {
   const answer = await inquirer.prompt([
     {
       type: "list",
@@ -142,13 +147,15 @@ export async function questionsForFilters(filterAction: string) {
   if (answer.value === ActionsEnum.Exit) {
     app();
   } else if (filterAction === ActionsEnum.FilterAll) {
-    lastQustionsForFilterAll(answer.value);
+    lastQustionsForFilter(answer.value);
   } else if (filterAction === ActionsEnum.FilterAllFromTo) {
     lastQustionsForFilterAllFromTo(answer.value);
+  } else if (filterAction === ActionsEnum.FilterOne && fileName) {
+    lastQustionsForFilter(answer.value, fileName);
   }
 }
 
-export async function lastQustionsForFilterAll(filterType: FilterTypesType) {
+export async function lastQustionsForFilter(filterType: FilterTypesType, fileName?: string) {
   let value;
 
   if (filterType === FilterTypesEnum.Regex) {
@@ -179,9 +186,11 @@ export async function lastQustionsForFilterAll(filterType: FilterTypesType) {
     );
   }
 
-  if (value === "q") {
+  if (value === ActionsEnum.Exit) {
     questionsForFilters(ActionsEnum.FilterAll);
-  } else {
+  } else if(fileName) {
+    loadFilterOne(filterType, value, fileName);
+  } else  {
     loadFilterAllWith(filterType, value);
   }
 }
@@ -193,32 +202,31 @@ export async function lastQustionsForFilterAllFromTo(filterType: FilterTypesType
     value = await inquirerInputQustion(
       `Enter regex value From to (Note: Add , to the end of the value except for path filters, enter ${chalk.bgRed.white.bold(
         "q",
-      )} to exit`
+      )} to exit`,
     );
   } else if (filterType === FilterTypesEnum.Year) {
     value = await inquirerInputQustion(
-      `Enter the year From to, enter ${chalk.bgRed.white.bold("q")} to exit`
+      `Enter the year From to, enter ${chalk.bgRed.white.bold("q")} to exit`,
     );
   } else if (filterType === FilterTypesEnum.Month) {
     value = await inquirerInputQustion(
-`Enter the month From to, enter ${chalk.bgRed.white.bold("q")} to exit`
+      `Enter the month From to, enter ${chalk.bgRed.white.bold("q")} to exit`,
     );
   } else if (filterType === FilterTypesEnum.Day) {
     value = await inquirerInputQustion(
-`Enter the day From to, enter ${chalk.bgRed.white.bold("q")} to exit`
+      `Enter the day From to, enter ${chalk.bgRed.white.bold("q")} to exit`,
     );
   } else if (filterType === FilterTypesEnum.Hour) {
     value = await inquirerInputQustion(
-`Enter the hour From to, enter ${chalk.bgRed.white.bold("q")} to exit`
+      `Enter the hour From to, enter ${chalk.bgRed.white.bold("q")} to exit`,
     );
   }
 
-  if (value === "q") {
+  if (value === ActionsEnum.Exit) {
     questionsForFilters(ActionsEnum.FilterAllFromTo);
   } else {
     loadFilterAllFromToWith(filterType, value);
   }
 }
-
 
 app();

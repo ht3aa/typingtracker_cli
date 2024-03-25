@@ -150,12 +150,23 @@ export async function getAllLinesFromFiles(files: Array<string>): Promise<Array<
   return lines.flat() as Array<string>;
 }
 
-export function sortData(lines: Array<string>) {
+export async function getLinesFromFile(file: string): Promise<Array<string>> {
+  return new Promise((resolve) => {
+    fs.readFile(WORKDATADIR + file, "utf8", (err, fileData) => {
+      if (err) {
+        console.error("Error occurred while reading the CSV file:", err);
+        return;
+      }
+
+      resolve(fileData.trim().split("\n"));
+    });
+  });
+}
+
+export function sortDataAsc(lines: Array<string>) {
   lines.sort((a, b) => {
     const aArr = a.split(",");
     const bArr = b.split(",");
-    aArr.splice(-2);
-    bArr.splice(-2);
     const aArrInt = aArr.map((str) => parseInt(str));
     const bArrInt = bArr.map((str) => parseInt(str));
 
@@ -198,7 +209,6 @@ export function sortData(lines: Array<string>) {
   });
 }
 
-
 export async function inquirerInputQustion(msg: string) {
   const answer = await inquirer.prompt({
     type: "input",
@@ -207,5 +217,10 @@ export async function inquirerInputQustion(msg: string) {
   });
 
   return answer.value;
-} 
+}
 
+export async function printLines(lines: Array<string>) {
+  lines.forEach((line: string, index: number) => {
+    console.log(`Line ${index}: ${line}`);
+  });
+}

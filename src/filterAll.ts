@@ -1,7 +1,7 @@
 import { FilterTypesEnum } from "./enums.js";
 import { FilterIndexType, FilterTypesType } from "./types.js";
 
-export default function filterAll(
+export default function filterLines(
   lines: Array<string>,
   filter: string,
   type: FilterTypesType,

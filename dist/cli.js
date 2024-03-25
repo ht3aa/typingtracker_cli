@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import chalk from "chalk";
 import inquirer from "inquirer";
-import { loadCalculateAll, loadCalculateOneWith, loadFilterAllFromToWith, loadFilterAllWith, } from "./loadActions.js";
+import { loadCalculateAll, loadCalculateOneWith, loadFilterAllFromToWith, loadFilterAllWith, loadFilterOne, } from "./loadActions.js";
 import { WORKDATADIR, EXISTOPTION } from "./constants.js";
 import { ActionsEnum, FilterTypesEnum } from "./enums.js";
 import { getFilesNameFromDir, inquirerInputQustion } from "./lib.js";
@@ -40,7 +40,7 @@ export function app() {
                     },
                     {
                         name: "filter one",
-                        value: "FilterOne",
+                        value: "filterOne",
                         short: "You Chose filter one",
                     },
                     {
@@ -56,20 +56,20 @@ export function app() {
             loadCalculateAll();
         }
         else if (answer.action === ActionsEnum.CalculateOne) {
-            qustionsForCalculateOne();
+            getFilesForAction(ActionsEnum.CalculateOne);
         }
         else if (answer.action === ActionsEnum.FilterAll) {
             questionsForFilters(ActionsEnum.FilterAll);
         }
         else if (answer.action === ActionsEnum.FilterOne) {
-            // filterOne();
+            getFilesForAction(ActionsEnum.FilterOne);
         }
         else if (answer.action === ActionsEnum.FilterAllFromTo) {
             questionsForFilters(ActionsEnum.FilterAllFromTo);
         }
     });
 }
-export function qustionsForCalculateOne() {
+export function getFilesForAction(action) {
     return __awaiter(this, void 0, void 0, function* () {
         const files = yield getFilesNameFromDir(WORKDATADIR);
         const answer = yield inquirer.prompt([
@@ -90,12 +90,15 @@ export function qustionsForCalculateOne() {
         if (answer.action === ActionsEnum.Exit) {
             app();
         }
-        else {
+        else if (action === ActionsEnum.CalculateOne) {
             loadCalculateOneWith(answer.action);
+        }
+        else if (action === ActionsEnum.FilterOne) {
+            questionsForFilters(ActionsEnum.FilterOne, answer.action);
         }
     });
 }
-export function questionsForFilters(filterAction) {
+export function questionsForFilters(filterAction, fileName) {
     return __awaiter(this, void 0, void 0, function* () {
         const answer = yield inquirer.prompt([
             {
@@ -146,14 +149,17 @@ export function questionsForFilters(filterAction) {
             app();
         }
         else if (filterAction === ActionsEnum.FilterAll) {
-            lastQustionsForFilterAll(answer.value);
+            lastQustionsForFilter(answer.value);
         }
         else if (filterAction === ActionsEnum.FilterAllFromTo) {
             lastQustionsForFilterAllFromTo(answer.value);
         }
+        else if (filterAction === ActionsEnum.FilterOne && fileName) {
+            lastQustionsForFilter(answer.value, fileName);
+        }
     });
 }
-export function lastQustionsForFilterAll(filterType) {
+export function lastQustionsForFilter(filterType, fileName) {
     return __awaiter(this, void 0, void 0, function* () {
         let value;
         if (filterType === FilterTypesEnum.Regex) {
@@ -174,8 +180,11 @@ export function lastQustionsForFilterAll(filterType) {
         else if (filterType === FilterTypesEnum.ProjectName) {
             value = yield inquirerInputQustion(`Enter the project name, enter ${chalk.bgRed.white.bold("q")} to exit`);
         }
-        if (value === "q") {
+        if (value === ActionsEnum.Exit) {
             questionsForFilters(ActionsEnum.FilterAll);
+        }
+        else if (fileName) {
+            loadFilterOne(filterType, value, fileName);
         }
         else {
             loadFilterAllWith(filterType, value);
@@ -200,7 +209,7 @@ export function lastQustionsForFilterAllFromTo(filterType) {
         else if (filterType === FilterTypesEnum.Hour) {
             value = yield inquirerInputQustion(`Enter the hour From to, enter ${chalk.bgRed.white.bold("q")} to exit`);
         }
-        if (value === "q") {
+        if (value === ActionsEnum.Exit) {
             questionsForFilters(ActionsEnum.FilterAllFromTo);
         }
         else {

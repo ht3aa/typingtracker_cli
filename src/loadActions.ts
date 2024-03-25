@@ -1,76 +1,71 @@
-import * as fs from "fs";
-import calculateAll from "./calculateAll.js";
 import { calculateOne } from "./calulateOne.js";
-import filterAll from "./filterAll.js";
+import filterLines from "./filterAll.js";
 import filterOne from "./filterOne.js";
 import { WORKDATADIR } from "./constants.js";
 import {
   filterLinesFn,
   getAllLinesFromFiles,
   getFilesNameFromDir,
+  getLinesFromFile,
+  printLines,
   printProductivityMap,
   printTotalProductivityMap,
   serializeCSVsToObjects,
-  serializeObjectsToCSV,
+  sortDataAsc,
 } from "./lib.js";
 import {
-  lastQustionsForFilterAll,
+    app,
+  lastQustionsForFilter,
   lastQustionsForFilterAllFromTo,
-  qustionsForCalculateOne,
+  getFilesForAction,
+  questionsForFilters,
 } from "./cli.js";
 import filterAllFromTo from "./filterAllFromTo.js";
-import { CSVToObjectType, FilterTypesType } from "./types.js";
+import { FilterTypesType } from "./types.js";
+import { ActionsEnum, FilterTypesEnum } from "./enums.js";
 
-export function loadCalculateAll() {
-  fs.readdir("./workFiles/", (err, files) => {
-    if (err) {
-      console.error("Error reading directory:", err);
-      return;
-    }
-
-    calculateAll(files);
-  });
+export async function loadCalculateAll() {
+  const files = await getFilesNameFromDir(WORKDATADIR);
+  const lines = await getAllLinesFromFiles(files);
+  const productivity = calculateOne(serializeCSVsToObjects(lines))
+  printTotalProductivityMap([productivity]);
+  app()
 }
 
-export function loadCalculateOneWith(fileName: string) {
-  const fileToWorkOn = WORKDATADIR + fileName;
-
-  fs.readFile(fileToWorkOn, "utf8", (err, fileData) => {
-    if (err) {
-      console.error("Error occurred while reading the CSV file:", err);
-      return;
-    }
-    const productivity = calculateOne(serializeCSVsToObjects(fileData.split("\n")));
-    printProductivityMap(productivity);
-    qustionsForCalculateOne();
-  });
+export async function loadCalculateOneWith(fileName: string) {
+  const lines = await getLinesFromFile(fileName);
+  const productivity = calculateOne(serializeCSVsToObjects(lines));
+  printProductivityMap(productivity);
+  getFilesForAction(ActionsEnum.CalculateOne);
 }
 
 export async function loadFilterAllWith(filterType: FilterTypesType, filter: string) {
   const files = await getFilesNameFromDir(WORKDATADIR);
   const lines = await getAllLinesFromFiles(files);
-  const filterdLines = filterAll(lines, filter, filterType);
+  const filterdLines = filterLines(lines, filter, filterType);
   const productivity = calculateOne(serializeCSVsToObjects(filterdLines));
 
-  filterdLines.forEach((line: string, index: number) => {
-    console.log(`Line ${index}: ${line}`);
-  });
-
+  sortDataAsc(filterdLines);
+  printLines(filterdLines);
   printTotalProductivityMap([productivity]);
 
-  lastQustionsForFilterAll(filterType);
+  if(filterType === FilterTypesEnum.None){
+    questionsForFilters(ActionsEnum.FilterAll);
+  } else {
+
+    lastQustionsForFilter(filterType);
+  }
 }
 
-export function loadFilterOneFile() {
-  if (
-    (process.argv[2] !== undefined && process.argv[3] !== undefined, process.argv[4] !== undefined)
-  ) {
-    const fileToWorkOn = "./" + process.argv[2];
-    filterOne(fileToWorkOn, process.argv[3], process.argv[4], filterLinesFn);
+export async function loadFilterOne(filterType: FilterTypesType, filter: string, fileName: string) {
+  const lines = await getLinesFromFile(fileName);
+  const filterdLines = filterLines(lines, filter, filterType);
+  printLines(filterdLines);
+
+  if(filterType === FilterTypesEnum.None){
+    questionsForFilters(ActionsEnum.FilterOne, fileName);
   } else {
-    console.log(
-      "Please enter a file name in the current directory, and an optional uniqueBy and filterType \n Example: node filterOne.js <fileToWorkOn, required> <filter, 2020, 12, 17 or none> <filterType, y,m,d,h or none>",
-    );
+    lastQustionsForFilter(filterType, fileName);
   }
 }
 
@@ -81,11 +76,8 @@ export async function loadFilterAllFromToWith(filterType: FilterTypesType, filte
   const filterdLines = filterAllFromTo(lines, filter.split(" "), filterType);
   const productivity = calculateOne(serializeCSVsToObjects(filterdLines));
 
-  filterdLines.forEach((line: string, index: number) => {
-    console.log(`Line ${index}: ${line}`);
-  });
-
+  sortDataAsc(filterdLines);
+  printLines(filterdLines);
   printTotalProductivityMap([productivity]);
-
   lastQustionsForFilterAllFromTo(filterType);
 }

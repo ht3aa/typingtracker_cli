@@ -1,11 +1,9 @@
 import { FilterTypesEnum, FromToEnum } from "./enums.js";
-import { sortData } from "./lib.js";
 export default function filterAllFromTo(lines, filter, type) {
     if (type === FilterTypesEnum.None) {
         return lines;
     }
     else if (type === FilterTypesEnum.Regex) {
-        sortData(lines);
         const splittedFromFilter = filter[FromToEnum.From].split(",");
         const splittedToFilter = filter[FromToEnum.To].split(",");
         return lines.filter((line) => {

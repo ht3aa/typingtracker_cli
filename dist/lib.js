@@ -139,12 +139,23 @@ export function getAllLinesFromFiles(files) {
         return lines.flat();
     });
 }
-export function sortData(lines) {
+export function getLinesFromFile(file) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve) => {
+            fs.readFile(WORKDATADIR + file, "utf8", (err, fileData) => {
+                if (err) {
+                    console.error("Error occurred while reading the CSV file:", err);
+                    return;
+                }
+                resolve(fileData.trim().split("\n"));
+            });
+        });
+    });
+}
+export function sortDataAsc(lines) {
     lines.sort((a, b) => {
         const aArr = a.split(",");
         const bArr = b.split(",");
-        aArr.splice(-2);
-        bArr.splice(-2);
         const aArrInt = aArr.map((str) => parseInt(str));
         const bArrInt = bArr.map((str) => parseInt(str));
         if (aArrInt[0] < bArrInt[0]) {
@@ -188,5 +199,12 @@ export function inquirerInputQustion(msg) {
             message: msg,
         });
         return answer.value;
+    });
+}
+export function printLines(lines) {
+    return __awaiter(this, void 0, void 0, function* () {
+        lines.forEach((line, index) => {
+            console.log(`Line ${index}: ${line}`);
+        });
     });
 }
