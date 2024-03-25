@@ -1,6 +1,7 @@
 import * as fs from "fs";
-import { WORKFILES } from "./constants.js";
+import { WORKDATADIR } from "./constants.js";
 import { CSVToObjectType } from "./types.js";
+import inquirer from "inquirer";
 
 export function addToSum(sums: Array<number>, paths: Array<string>, row: Array<string>) {
   const index = paths.indexOf(row[7]);
@@ -20,22 +21,29 @@ export function getMinsHsDsWsMsYs(seconds: number) {
   return [minutes, hours, days, weeks, months, years];
 }
 
-export function serializeCSVsToObjects(lines: Array<string>) {
+export function serializeCSVToObject(line: string) {
+  const splittedLine = line.split(",");
+
+  const obj: CSVToObjectType = {
+    year: splittedLine[0],
+    month: splittedLine[1],
+    day: splittedLine[2],
+    hour: splittedLine[3],
+    minute: splittedLine[4],
+    second: splittedLine[5],
+    productivitySeconds: splittedLine[6],
+    path: splittedLine[7],
+    commitMsg: splittedLine[8],
+  };
+
+  return obj;
+}
+
+export function serializeCSVsToObjects(lines: Array<string>): Array<CSVToObjectType> {
   const arr: Array<CSVToObjectType> = [];
 
   for (let i = 0; i < lines.length - 1; i++) {
-    const line = lines[i].split(",");
-    arr.push({
-      year: line[0],
-      month: line[1],
-      day: line[2],
-      hour: line[3],
-      minute: line[4],
-      second: line[5],
-      productivitySeconds: line[6],
-      path: line[7],
-      commitMsg: line[8],
-    });
+    arr.push(serializeCSVToObject(lines[i]));
   }
 
   return arr;
@@ -111,29 +119,93 @@ export function filterLinesFn(lines: Array<string>, index: any, filter: string |
   return lines.filter((line) => line.split(",")[index] === filter);
 }
 
-export async function getAllLinesFromFiles(): Promise<Array<string>> {
+export async function getFilesNameFromDir(dir: string): Promise<Array<string>> {
   return new Promise((resolve) => {
-    fs.readdir(WORKFILES, async (err, files) => {
+    fs.readdir(dir, (err, files) => {
       if (err) {
         console.error("Error reading directory:", err);
         return;
       }
-
-      const lines = await Promise.all(
-        files.map((file) => {
-          return new Promise((resolve) => {
-            fs.readFile(WORKFILES + file, "utf8", (err, fileData) => {
-              if (err) {
-                console.error("Error occurred while reading the CSV file:", err);
-                return;
-              }
-
-              resolve(fileData.trim().split("\n"));
-            });
-          });
-        }),
-      );
-      resolve(lines.flat() as Array<string>);
+      resolve(files);
     });
   });
 }
+
+export async function getAllLinesFromFiles(files: Array<string>): Promise<Array<string>> {
+  const lines = await Promise.all(
+    files.map((file: string) => {
+      return new Promise((resolve) => {
+        fs.readFile(WORKDATADIR + file, "utf8", (err, fileData) => {
+          if (err) {
+            console.error("Error occurred while reading the CSV file:", err);
+            return;
+          }
+
+          resolve(fileData.trim().split("\n"));
+        });
+      });
+    }),
+  );
+
+  return lines.flat() as Array<string>;
+}
+
+export function sortData(lines: Array<string>) {
+  lines.sort((a, b) => {
+    const aArr = a.split(",");
+    const bArr = b.split(",");
+    aArr.splice(-2);
+    bArr.splice(-2);
+    const aArrInt = aArr.map((str) => parseInt(str));
+    const bArrInt = bArr.map((str) => parseInt(str));
+
+    if (aArrInt[0] < bArrInt[0]) {
+      return -1;
+    }
+    if (aArrInt[0] > bArrInt[0]) {
+      return 1;
+    }
+
+    if (aArrInt[1] < bArrInt[1]) {
+      return -1;
+    }
+    if (aArrInt[1] > bArrInt[1]) {
+      return 1;
+    }
+
+    if (aArrInt[2] < bArrInt[2]) {
+      return -1;
+    }
+    if (aArrInt[2] > bArrInt[2]) {
+      return 1;
+    }
+
+    if (aArrInt[3] < bArrInt[3]) {
+      return -1;
+    }
+    if (aArrInt[3] > bArrInt[3]) {
+      return 1;
+    }
+
+    if (aArrInt[4] < bArrInt[4]) {
+      return -1;
+    }
+    if (aArrInt[4] > bArrInt[4]) {
+      return 1;
+    }
+
+    return 0;
+  });
+}
+
+
+export async function inquirerInputQustion(msg: string) {
+  const answer = await inquirer.prompt({
+    type: "input",
+    name: "value",
+    message: msg,
+  });
+
+  return answer.value;
+} 
+

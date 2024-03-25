@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import { WORKFILES } from "./constants.js";
+import { WORKDATADIR } from "./constants.js";
 function filterLines(lines, index, filter) {
     if (index === "none") {
         return lines;
@@ -23,7 +23,7 @@ function printFilterdLines(lines, index, filter, filterFn) {
 }
 export default function filterOne(fileToWorkOn, filter, type = "none", filterFn) {
     return new Promise((resolve) => {
-        fs.readFile(WORKFILES + fileToWorkOn, "utf8", (err, fileData) => {
+        fs.readFile(WORKDATADIR + fileToWorkOn, "utf8", (err, fileData) => {
             if (err) {
                 console.error("Error occurred while reading the CSV file:", err);
                 return;

@@ -9,13 +9,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import * as fs from "fs";
 import { printTotalProductivityMap, serializeCSVsToObjects } from "./lib.js";
-import { WORKFILES } from "./constants.js";
+import { WORKDATADIR } from "./constants.js";
 import { calculateOne } from "./calulateOne.js";
 import { app } from "./cli.js";
 export default function calculateAll(filesToWorkOn) {
     Promise.all(filesToWorkOn.map((file) => __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve) => {
-            fs.readFile(WORKFILES + file, "utf8", (err, fileData) => {
+            fs.readFile(WORKDATADIR + file, "utf8", (err, fileData) => {
                 if (err) {
                     console.error("Error occurred while reading the CSV file:", err);
                     return;

@@ -12,8 +12,8 @@ import calculateAll from "./calculateAll.js";
 import { calculateOne } from "./calulateOne.js";
 import filterAll from "./filterAll.js";
 import filterOne from "./filterOne.js";
-import { WORKFILES } from "./constants.js";
-import { filterLinesFn, getAllLinesFromFiles, printProductivityMap, printTotalProductivityMap, serializeCSVsToObjects, } from "./lib.js";
+import { WORKDATADIR } from "./constants.js";
+import { filterLinesFn, getAllLinesFromFiles, getFilesNameFromDir, printProductivityMap, printTotalProductivityMap, serializeCSVsToObjects, } from "./lib.js";
 import { lastQustionsForFilterAll, lastQustionsForFilterAllFromTo, qustionsForCalculateOne, } from "./cli.js";
 import filterAllFromTo from "./filterAllFromTo.js";
 export function loadCalculateAll() {
@@ -26,7 +26,7 @@ export function loadCalculateAll() {
     });
 }
 export function loadCalculateOneWith(fileName) {
-    const fileToWorkOn = WORKFILES + fileName;
+    const fileToWorkOn = WORKDATADIR + fileName;
     fs.readFile(fileToWorkOn, "utf8", (err, fileData) => {
         if (err) {
             console.error("Error occurred while reading the CSV file:", err);
@@ -39,14 +39,15 @@ export function loadCalculateOneWith(fileName) {
 }
 export function loadFilterAllWith(filterType, filter) {
     return __awaiter(this, void 0, void 0, function* () {
-        const lines = yield getAllLinesFromFiles();
+        const files = yield getFilesNameFromDir(WORKDATADIR);
+        const lines = yield getAllLinesFromFiles(files);
         const filterdLines = filterAll(lines, filter, filterType);
         const productivity = calculateOne(serializeCSVsToObjects(filterdLines));
         filterdLines.forEach((line, index) => {
             console.log(`Line ${index}: ${line}`);
         });
         printTotalProductivityMap([productivity]);
-        lastQustionsForFilterAll({ value: filterType });
+        lastQustionsForFilterAll(filterType);
     });
 }
 export function loadFilterOneFile() {
@@ -60,13 +61,14 @@ export function loadFilterOneFile() {
 }
 export function loadFilterAllFromToWith(filterType, filter) {
     return __awaiter(this, void 0, void 0, function* () {
-        const lines = yield getAllLinesFromFiles();
-        const filterdLines = filterAllFromTo(lines, filter.split("*"), filterType);
+        const files = yield getFilesNameFromDir(WORKDATADIR);
+        const lines = yield getAllLinesFromFiles(files);
+        const filterdLines = filterAllFromTo(lines, filter.split(" "), filterType);
         const productivity = calculateOne(serializeCSVsToObjects(filterdLines));
         filterdLines.forEach((line, index) => {
             console.log(`Line ${index}: ${line}`);
         });
         printTotalProductivityMap([productivity]);
-        lastQustionsForFilterAllFromTo({ value: filterType });
+        lastQustionsForFilterAllFromTo(filterType);
     });
 }

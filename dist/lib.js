@@ -8,7 +8,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import * as fs from "fs";
-import { WORKFILES } from "./constants.js";
+import { WORKDATADIR } from "./constants.js";
+import inquirer from "inquirer";
 export function addToSum(sums, paths, row) {
     const index = paths.indexOf(row[7]);
     if (sums[index] === undefined) {
@@ -25,21 +26,25 @@ export function getMinsHsDsWsMsYs(seconds) {
     const years = Math.floor(months / 12);
     return [minutes, hours, days, weeks, months, years];
 }
+export function serializeCSVToObject(line) {
+    const splittedLine = line.split(",");
+    const obj = {
+        year: splittedLine[0],
+        month: splittedLine[1],
+        day: splittedLine[2],
+        hour: splittedLine[3],
+        minute: splittedLine[4],
+        second: splittedLine[5],
+        productivitySeconds: splittedLine[6],
+        path: splittedLine[7],
+        commitMsg: splittedLine[8],
+    };
+    return obj;
+}
 export function serializeCSVsToObjects(lines) {
     const arr = [];
     for (let i = 0; i < lines.length - 1; i++) {
-        const line = lines[i].split(",");
-        arr.push({
-            year: line[0],
-            month: line[1],
-            day: line[2],
-            hour: line[3],
-            minute: line[4],
-            second: line[5],
-            productivitySeconds: line[6],
-            path: line[7],
-            commitMsg: line[8],
-        });
+        arr.push(serializeCSVToObject(lines[i]));
     }
     return arr;
 }
@@ -105,27 +110,83 @@ export function filterLinesFn(lines, index, filter) {
     }
     return lines.filter((line) => line.split(",")[index] === filter);
 }
-export function getAllLinesFromFiles() {
+export function getFilesNameFromDir(dir) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve) => {
-            fs.readdir(WORKFILES, (err, files) => __awaiter(this, void 0, void 0, function* () {
+            fs.readdir(dir, (err, files) => {
                 if (err) {
                     console.error("Error reading directory:", err);
                     return;
                 }
-                const lines = yield Promise.all(files.map((file) => {
-                    return new Promise((resolve) => {
-                        fs.readFile(WORKFILES + file, "utf8", (err, fileData) => {
-                            if (err) {
-                                console.error("Error occurred while reading the CSV file:", err);
-                                return;
-                            }
-                            resolve(fileData.trim().split("\n"));
-                        });
-                    });
-                }));
-                resolve(lines.flat());
-            }));
+                resolve(files);
+            });
         });
+    });
+}
+export function getAllLinesFromFiles(files) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const lines = yield Promise.all(files.map((file) => {
+            return new Promise((resolve) => {
+                fs.readFile(WORKDATADIR + file, "utf8", (err, fileData) => {
+                    if (err) {
+                        console.error("Error occurred while reading the CSV file:", err);
+                        return;
+                    }
+                    resolve(fileData.trim().split("\n"));
+                });
+            });
+        }));
+        return lines.flat();
+    });
+}
+export function sortData(lines) {
+    lines.sort((a, b) => {
+        const aArr = a.split(",");
+        const bArr = b.split(",");
+        aArr.splice(-2);
+        bArr.splice(-2);
+        const aArrInt = aArr.map((str) => parseInt(str));
+        const bArrInt = bArr.map((str) => parseInt(str));
+        if (aArrInt[0] < bArrInt[0]) {
+            return -1;
+        }
+        if (aArrInt[0] > bArrInt[0]) {
+            return 1;
+        }
+        if (aArrInt[1] < bArrInt[1]) {
+            return -1;
+        }
+        if (aArrInt[1] > bArrInt[1]) {
+            return 1;
+        }
+        if (aArrInt[2] < bArrInt[2]) {
+            return -1;
+        }
+        if (aArrInt[2] > bArrInt[2]) {
+            return 1;
+        }
+        if (aArrInt[3] < bArrInt[3]) {
+            return -1;
+        }
+        if (aArrInt[3] > bArrInt[3]) {
+            return 1;
+        }
+        if (aArrInt[4] < bArrInt[4]) {
+            return -1;
+        }
+        if (aArrInt[4] > bArrInt[4]) {
+            return 1;
+        }
+        return 0;
+    });
+}
+export function inquirerInputQustion(msg) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const answer = yield inquirer.prompt({
+            type: "input",
+            name: "value",
+            message: msg,
+        });
+        return answer.value;
     });
 }

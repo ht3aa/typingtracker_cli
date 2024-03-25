@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import { WORKFILES } from "./constants.js";
+import { WORKDATADIR } from "./constants.js";
 import { calculateOne } from "./calulateOne.js";
 import { serializeCSVsToObjects } from "./lib.js";
 import { FilterFnType } from "./types.js";
@@ -40,7 +40,7 @@ export default function filterOne(
   filterFn: FilterFnType,
 ): Promise<{ lines: Array<string>; productivity: Map<string, number> }> {
   return new Promise((resolve) => {
-    fs.readFile(WORKFILES + fileToWorkOn, "utf8", (err, fileData) => {
+    fs.readFile(WORKDATADIR + fileToWorkOn, "utf8", (err, fileData) => {
       if (err) {
         console.error("Error occurred while reading the CSV file:", err);
         return;

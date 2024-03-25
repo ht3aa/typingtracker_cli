@@ -3,10 +3,11 @@ import calculateAll from "./calculateAll.js";
 import { calculateOne } from "./calulateOne.js";
 import filterAll from "./filterAll.js";
 import filterOne from "./filterOne.js";
-import { WORKFILES } from "./constants.js";
+import { WORKDATADIR } from "./constants.js";
 import {
   filterLinesFn,
   getAllLinesFromFiles,
+  getFilesNameFromDir,
   printProductivityMap,
   printTotalProductivityMap,
   serializeCSVsToObjects,
@@ -18,7 +19,7 @@ import {
   qustionsForCalculateOne,
 } from "./cli.js";
 import filterAllFromTo from "./filterAllFromTo.js";
-import { CSVToObjectType, FilterTypes } from "./types.js";
+import { CSVToObjectType, FilterTypesType } from "./types.js";
 
 export function loadCalculateAll() {
   fs.readdir("./workFiles/", (err, files) => {
@@ -32,7 +33,7 @@ export function loadCalculateAll() {
 }
 
 export function loadCalculateOneWith(fileName: string) {
-  const fileToWorkOn = WORKFILES + fileName;
+  const fileToWorkOn = WORKDATADIR + fileName;
 
   fs.readFile(fileToWorkOn, "utf8", (err, fileData) => {
     if (err) {
@@ -45,8 +46,9 @@ export function loadCalculateOneWith(fileName: string) {
   });
 }
 
-export async function loadFilterAllWith(filterType: FilterTypes, filter: string) {
-  const lines = await getAllLinesFromFiles();
+export async function loadFilterAllWith(filterType: FilterTypesType, filter: string) {
+  const files = await getFilesNameFromDir(WORKDATADIR);
+  const lines = await getAllLinesFromFiles(files);
   const filterdLines = filterAll(lines, filter, filterType);
   const productivity = calculateOne(serializeCSVsToObjects(filterdLines));
 
@@ -56,7 +58,7 @@ export async function loadFilterAllWith(filterType: FilterTypes, filter: string)
 
   printTotalProductivityMap([productivity]);
 
-  lastQustionsForFilterAll({ value: filterType });
+  lastQustionsForFilterAll(filterType);
 }
 
 export function loadFilterOneFile() {
@@ -72,10 +74,11 @@ export function loadFilterOneFile() {
   }
 }
 
-export async function loadFilterAllFromToWith(filterType: FilterTypes, filter: string) {
-  const lines = await getAllLinesFromFiles();
+export async function loadFilterAllFromToWith(filterType: FilterTypesType, filter: string) {
+  const files = await getFilesNameFromDir(WORKDATADIR);
+  const lines = await getAllLinesFromFiles(files);
 
-  const filterdLines = filterAllFromTo(lines, filter.split("*"), filterType);
+  const filterdLines = filterAllFromTo(lines, filter.split(" "), filterType);
   const productivity = calculateOne(serializeCSVsToObjects(filterdLines));
 
   filterdLines.forEach((line: string, index: number) => {
@@ -84,5 +87,5 @@ export async function loadFilterAllFromToWith(filterType: FilterTypes, filter: s
 
   printTotalProductivityMap([productivity]);
 
-  lastQustionsForFilterAllFromTo({ value: filterType });
+  lastQustionsForFilterAllFromTo(filterType);
 }

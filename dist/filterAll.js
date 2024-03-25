@@ -10,5 +10,8 @@ export default function filterAll(lines, filter, type) {
             }
         });
     }
+    else if (type === FilterTypesEnum.ProjectName) {
+        return lines.filter((line) => line.split(",")[type].includes(filter));
+    }
     return lines.filter((line) => line.split(",")[type] === filter);
 }
