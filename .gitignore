@@ -1,9 +1,8 @@
 node_modules
 .vscode
 .git
-src
-old
 package-lock.json
 npm-debug.log
 todo.txt
-
+src
+workFiles/*

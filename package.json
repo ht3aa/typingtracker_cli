@@ -1,14 +1,14 @@
 {
-  "name": "productivitytracker",
-  "version": "1.0.1",
+  "name": "typingtracker",
+  "version": "1.0.3",
   "description": "",
   "scripts": {
     "dev": "tsc && node dist/cli.js",
-    "build": "sudo npm -force install -g ./",
+    "build": "sudo npm install -g ./",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "productivityTracker": "dist/cli.js"
+    "typingtracker": "dist/cli.js"
   },
   "author": "",
   "license": "ISC",

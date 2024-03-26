@@ -1,6 +1,5 @@
 import { FilterTypesEnum } from "./enums.js";
 export default function filterLines(lines, filter, type) {
-    console.log(type);
     if (type === FilterTypesEnum.None) {
         return lines;
     }
