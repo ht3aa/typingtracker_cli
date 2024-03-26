@@ -1,6 +1,6 @@
-node_modules
-.vscode
-.git
+node_modules/
+.vscode/
+.git/
 package-lock.json
 npm-debug.log
 todo.txt
