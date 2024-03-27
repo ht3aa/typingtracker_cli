@@ -1,17 +1,25 @@
 {
   "name": "typingtracker",
   "version": "1.0.6",
-  "description": "",
+  "description": "track the time you spent typing in neovim or lunarvim",
   "scripts": {
     "build": "tsc",
     "dev": "tsc && node dist/cli.js",
     "start": "sudo npm install -g ./",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ht3aa/typingtracker_cli"
+  },
+  "homepage": "https://github.com/ht3aa/typingtracker_cli#readme",
+  "bugs": {
+    "url": "https://github.com/ht3aa/typingtracker_cli/issues"
+  },
   "bin": {
     "typingtracker": "dist/cli.js"
   },
-  "author": "",
+  "author": "ht3aa",
   "license": "ISC",
   "devDependencies": {
     "@types/inquirer": "^9.0.7",
