@@ -42,6 +42,8 @@ export async function loadFilterAllWith(filterType: FilterTypesType, filter: str
   const lines = await getAllLinesFromFiles(files);
 
   if (filterType === FilterTypesEnum.None) {
+
+    sortDataAsc(lines);
     printLines(lines);
     questionsForFilters(ActionsEnum.FilterAll);
   } else {
@@ -58,6 +60,7 @@ export async function loadFilterOne(filterType: FilterTypesType, filter: string,
   const lines = await getLinesFromFile(fileName);
 
   if (filterType === FilterTypesEnum.None) {
+    sortDataAsc(lines);
     printLines(lines);
     questionsForFilters(ActionsEnum.FilterOne, fileName);
   } else {
