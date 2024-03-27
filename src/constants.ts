@@ -5,9 +5,8 @@ export const WORKDATADIR = "/tmp/typingtracker/workFiles/";
 
 checkFolderIfExists(WORKDATADIR);
 
-
 export const EXISTOPTION = {
-  name: chalk.bgRed.white.bold("Exit"),
+  name: chalk.bgRed.white.bold("Go Back"),
   value: "q",
   short: "You Chose Exit",
 };

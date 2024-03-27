@@ -1,6 +1,6 @@
 {
   "name": "typingtracker",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "track the time you spent typing in neovim or lunarvim",
   "scripts": {
     "build": "tsc",

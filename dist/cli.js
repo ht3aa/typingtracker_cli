@@ -14,7 +14,7 @@ import { loadCalculateAll, loadCalculateOneWith, loadFilterAllFromToWith, loadFi
 import { WORKDATADIR, EXISTOPTION } from "./constants.js";
 import { ActionsEnum, FilterTypesEnum } from "./enums.js";
 import { getFilesNameFromDir, inquirerInputQustion } from "./lib.js";
-console.log(chalk.bgBlue.white.bold(" Welcome to Productivity Tracker (Made by www.hasanweb.tech) \n\n"));
+console.log(chalk.bgBlue.white.bold(" Welcome to Typing Tracker (Made by www.hasanweb.tech) \n\n"));
 export function app() {
     return __awaiter(this, void 0, void 0, function* () {
         const answer = yield inquirer.prompt([
@@ -76,7 +76,7 @@ export function getFilesForAction(action) {
             {
                 type: "list",
                 name: "action",
-                message: "Choose an Action",
+                message: "Choose a File",
                 choices: [
                     ...files.map((file) => ({
                         name: file,
@@ -163,22 +163,22 @@ export function lastQustionsForFilter(filterType, fileName) {
     return __awaiter(this, void 0, void 0, function* () {
         let value;
         if (filterType === FilterTypesEnum.Regex) {
-            value = yield inquirerInputQustion(`Enter regex value (Note: Add , to the end of the value except for path filters, enter ${chalk.bgRed.white.bold("q")} to exit`);
+            value = yield inquirerInputQustion(`Enter date value (example: 2022,1,1), enter ${chalk.bgRed.white.bold("q")} to exit:`);
         }
         else if (filterType === FilterTypesEnum.Year) {
-            value = yield inquirerInputQustion(`Enter the year, enter ${chalk.bgRed.white.bold("q")} to exit`);
+            value = yield inquirerInputQustion(`Enter the year (example: 2024), enter ${chalk.bgRed.white.bold("q")} to exit:`);
         }
         else if (filterType === FilterTypesEnum.Month) {
-            value = yield inquirerInputQustion(`Enter the mont, enter ${chalk.bgRed.white.bold("q")} to exit`);
+            value = yield inquirerInputQustion(`Enter the month (example: 1), enter ${chalk.bgRed.white.bold("q")} to exit:`);
         }
         else if (filterType === FilterTypesEnum.Day) {
-            value = yield inquirerInputQustion(`Enter the day, enter ${chalk.bgRed.white.bold("q")} to exit`);
+            value = yield inquirerInputQustion(`Enter the day (example: 1), enter ${chalk.bgRed.white.bold("q")} to exit:`);
         }
         else if (filterType === FilterTypesEnum.Hour) {
-            value = yield inquirerInputQustion(`Enter the hour, enter ${chalk.bgRed.white.bold("q")} to exit`);
+            value = yield inquirerInputQustion(`Enter the hour (example: 1), enter ${chalk.bgRed.white.bold("q")} to exit:`);
         }
         else if (filterType === FilterTypesEnum.ProjectName) {
-            value = yield inquirerInputQustion(`Enter the project name, enter ${chalk.bgRed.white.bold("q")} to exit`);
+            value = yield inquirerInputQustion(`Enter the project name (example: twanis/backend), enter ${chalk.bgRed.white.bold("q")} to exit: `);
         }
         if (value === ActionsEnum.Exit) {
             questionsForFilters(ActionsEnum.FilterAll);
@@ -195,19 +195,19 @@ export function lastQustionsForFilterAllFromTo(filterType) {
     return __awaiter(this, void 0, void 0, function* () {
         let value;
         if (filterType === FilterTypesEnum.Regex) {
-            value = yield inquirerInputQustion(`Enter regex value From to (Note: Add , to the end of the value except for path filters, enter ${chalk.bgRed.white.bold("q")} to exit`);
+            value = yield inquirerInputQustion(`Enter date value From to (example: 2022,1,1 2022,1,20), enter ${chalk.bgRed.white.bold("q")} to exit:`);
         }
         else if (filterType === FilterTypesEnum.Year) {
-            value = yield inquirerInputQustion(`Enter the year From to, enter ${chalk.bgRed.white.bold("q")} to exit`);
+            value = yield inquirerInputQustion(`Enter the year From to (example: 2022 2024), enter ${chalk.bgRed.white.bold("q")} to exit:`);
         }
         else if (filterType === FilterTypesEnum.Month) {
-            value = yield inquirerInputQustion(`Enter the month From to, enter ${chalk.bgRed.white.bold("q")} to exit`);
+            value = yield inquirerInputQustion(`Enter the month From to (example: 1 2), enter ${chalk.bgRed.white.bold("q")} to exit:`);
         }
         else if (filterType === FilterTypesEnum.Day) {
-            value = yield inquirerInputQustion(`Enter the day From to, enter ${chalk.bgRed.white.bold("q")} to exit`);
+            value = yield inquirerInputQustion(`Enter the day From to (example: 1 2), enter ${chalk.bgRed.white.bold("q")} to exit:`);
         }
         else if (filterType === FilterTypesEnum.Hour) {
-            value = yield inquirerInputQustion(`Enter the hour From to, enter ${chalk.bgRed.white.bold("q")} to exit`);
+            value = yield inquirerInputQustion(`Enter the hour From to (example: 1 2), enter ${chalk.bgRed.white.bold("q")} to exit:`);
         }
         if (value === ActionsEnum.Exit) {
             questionsForFilters(ActionsEnum.FilterAllFromTo);

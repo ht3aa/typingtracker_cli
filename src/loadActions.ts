@@ -42,9 +42,11 @@ export async function loadFilterAllWith(filterType: FilterTypesType, filter: str
   const lines = await getAllLinesFromFiles(files);
 
   if (filterType === FilterTypesEnum.None) {
+    const productivity = calculateOne(serializeCSVsToObjects(lines));
 
     sortDataAsc(lines);
     printLines(lines);
+    printTotalProductivityMap([productivity]);
     questionsForFilters(ActionsEnum.FilterAll);
   } else {
     const filterdLines = filterLines(lines, filter, filterType);

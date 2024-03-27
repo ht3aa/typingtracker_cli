@@ -13,9 +13,7 @@ import { ActionsEnum, FilterTypesEnum } from "./enums.js";
 import { getFilesNameFromDir, inquirerInputQustion } from "./lib.js";
 import { FilterTypesType } from "./types.js";
 
-console.log(
-  chalk.bgBlue.white.bold(" Welcome to Productivity Tracker (Made by www.hasanweb.tech) \n\n"),
-);
+console.log(chalk.bgBlue.white.bold(" Welcome to Typing Tracker (Made by www.hasanweb.tech) \n\n"));
 
 export async function app() {
   const answer = await inquirer.prompt([
@@ -74,7 +72,7 @@ export async function getFilesForAction(action: string) {
     {
       type: "list",
       name: "action",
-      message: "Choose an Action",
+      message: "Choose a File",
       choices: [
         ...files.map((file) => ({
           name: file,
@@ -158,29 +156,29 @@ export async function lastQustionsForFilter(filterType: FilterTypesType, fileNam
 
   if (filterType === FilterTypesEnum.Regex) {
     value = await inquirerInputQustion(
-      `Enter regex value (Note: Add , to the end of the value except for path filters, enter ${chalk.bgRed.white.bold(
-        "q",
-      )} to exit`,
+      `Enter date value (example: 2022,1,1), enter ${chalk.bgRed.white.bold("q")} to exit:`,
     );
   } else if (filterType === FilterTypesEnum.Year) {
     value = await inquirerInputQustion(
-      `Enter the year, enter ${chalk.bgRed.white.bold("q")} to exit`,
+      `Enter the year (example: 2024), enter ${chalk.bgRed.white.bold("q")} to exit:`,
     );
   } else if (filterType === FilterTypesEnum.Month) {
     value = await inquirerInputQustion(
-      `Enter the mont, enter ${chalk.bgRed.white.bold("q")} to exit`,
+      `Enter the month (example: 1), enter ${chalk.bgRed.white.bold("q")} to exit:`,
     );
   } else if (filterType === FilterTypesEnum.Day) {
     value = await inquirerInputQustion(
-      `Enter the day, enter ${chalk.bgRed.white.bold("q")} to exit`,
+      `Enter the day (example: 1), enter ${chalk.bgRed.white.bold("q")} to exit:`,
     );
   } else if (filterType === FilterTypesEnum.Hour) {
     value = await inquirerInputQustion(
-      `Enter the hour, enter ${chalk.bgRed.white.bold("q")} to exit`,
+      `Enter the hour (example: 1), enter ${chalk.bgRed.white.bold("q")} to exit:`,
     );
   } else if (filterType === FilterTypesEnum.ProjectName) {
     value = await inquirerInputQustion(
-      `Enter the project name, enter ${chalk.bgRed.white.bold("q")} to exit`,
+      `Enter the project name (example: twanis/backend), enter ${chalk.bgRed.white.bold(
+        "q",
+      )} to exit: `,
     );
   }
 
@@ -198,25 +196,23 @@ export async function lastQustionsForFilterAllFromTo(filterType: FilterTypesType
 
   if (filterType === FilterTypesEnum.Regex) {
     value = await inquirerInputQustion(
-      `Enter regex value From to (Note: Add , to the end of the value except for path filters, enter ${chalk.bgRed.white.bold(
-        "q",
-      )} to exit`,
+      `Enter date value From to (example: 2022,1,1 2022,1,20), enter ${chalk.bgRed.white.bold("q")} to exit:`,
     );
   } else if (filterType === FilterTypesEnum.Year) {
     value = await inquirerInputQustion(
-      `Enter the year From to, enter ${chalk.bgRed.white.bold("q")} to exit`,
+      `Enter the year From to (example: 2022 2024), enter ${chalk.bgRed.white.bold("q")} to exit:`,
     );
   } else if (filterType === FilterTypesEnum.Month) {
     value = await inquirerInputQustion(
-      `Enter the month From to, enter ${chalk.bgRed.white.bold("q")} to exit`,
+      `Enter the month From to (example: 1 2), enter ${chalk.bgRed.white.bold("q")} to exit:`,
     );
   } else if (filterType === FilterTypesEnum.Day) {
     value = await inquirerInputQustion(
-      `Enter the day From to, enter ${chalk.bgRed.white.bold("q")} to exit`,
+      `Enter the day From to (example: 1 2), enter ${chalk.bgRed.white.bold("q")} to exit:`,
     );
   } else if (filterType === FilterTypesEnum.Hour) {
     value = await inquirerInputQustion(
-      `Enter the hour From to, enter ${chalk.bgRed.white.bold("q")} to exit`,
+      `Enter the hour From to (example: 1 2), enter ${chalk.bgRed.white.bold("q")} to exit:`,
     );
   }
 

@@ -36,8 +36,10 @@ export function loadFilterAllWith(filterType, filter) {
         const files = yield getFilesNameFromDir(WORKDATADIR);
         const lines = yield getAllLinesFromFiles(files);
         if (filterType === FilterTypesEnum.None) {
+            const productivity = calculateOne(serializeCSVsToObjects(lines));
             sortDataAsc(lines);
             printLines(lines);
+            printTotalProductivityMap([productivity]);
             questionsForFilters(ActionsEnum.FilterAll);
         }
         else {
