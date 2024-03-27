@@ -3,4 +3,4 @@ node_modules/
 .git/
 package-lock.json
 npm-debug.log
-workFiles/lvim.csv
+workFiles

@@ -224,3 +224,10 @@ export async function printLines(lines: Array<string>) {
     console.log(`Line ${index}: ${line}`);
   });
 }
+
+
+export function createFolderIfNotExists(folderName: string) {
+  if (!fs.existsSync(folderName)) {
+    fs.mkdirSync(folderName);
+  }
+}

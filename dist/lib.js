@@ -208,3 +208,8 @@ export function printLines(lines) {
         });
     });
 }
+export function createFolderIfNotExists(folderName) {
+    if (!fs.existsSync(folderName)) {
+        fs.mkdirSync(folderName);
+    }
+}
