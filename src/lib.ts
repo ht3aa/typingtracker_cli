@@ -2,6 +2,7 @@ import * as fs from "fs";
 import { WORKDATADIR } from "./constants.js";
 import { CSVToObjectType } from "./types.js";
 import inquirer from "inquirer";
+import chalk from "chalk";
 
 export function addToSum(sums: Array<number>, paths: Array<string>, row: Array<string>) {
   const index = paths.indexOf(row[7]);
@@ -225,9 +226,8 @@ export async function printLines(lines: Array<string>) {
   });
 }
 
-
-export function createFolderIfNotExists(folderName: string) {
+export function checkFolderIfExists(folderName: string) {
   if (!fs.existsSync(folderName)) {
-    fs.mkdirSync(folderName);
+    console.log(chalk.bgRed.white.bold(`Folder ${folderName} does not exists. follow README.md of this repository https://github.com/ht3aa/typingtracker_cli`));
   }
 }

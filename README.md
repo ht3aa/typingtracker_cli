@@ -11,23 +11,10 @@ so That when you exit neovim it will save your typing time in a file named as th
 The working directory should have .git folder inside it to work.
 
 ## Usage
-After you done the steps in Important Notes section. you can install typingtracker cli package
+After you done the steps in Important Notes section. first you need to run neovim and make some movement or typing and then quit so that the folders and data will be created and stored in /tmp/typingtracker/workFiles/ path. You can then install typingtracker cli package
 
 ```
-npm install -g typingtracker
-```
-
-after installing it you should allow to the premission to that package to be updated with the new records.
-to see where is your package installed run this command
-
-```
-npm root -g
-```
-this will output something like this "/usr/local/lib/node_modules" (if you are linux user) then
-
-
-```
-sudo chown -R <username> /usr/local/lib/node_modules/typingtracker
+sudo npm install -g typingtracker
 ```
 
 after that you can run 
