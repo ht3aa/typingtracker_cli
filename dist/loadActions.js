@@ -36,6 +36,7 @@ export function loadFilterAllWith(filterType, filter) {
         const files = yield getFilesNameFromDir(WORKDATADIR);
         const lines = yield getAllLinesFromFiles(files);
         if (filterType === FilterTypesEnum.None) {
+            sortDataAsc(lines);
             printLines(lines);
             questionsForFilters(ActionsEnum.FilterAll);
         }
@@ -53,6 +54,7 @@ export function loadFilterOne(filterType, filter, fileName) {
     return __awaiter(this, void 0, void 0, function* () {
         const lines = yield getLinesFromFile(fileName);
         if (filterType === FilterTypesEnum.None) {
+            sortDataAsc(lines);
             printLines(lines);
             questionsForFilters(ActionsEnum.FilterOne, fileName);
         }
