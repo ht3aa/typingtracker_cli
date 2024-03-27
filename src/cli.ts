@@ -65,11 +65,9 @@ export async function app() {
   } else if (answer.action === ActionsEnum.FilterAllFromTo) {
     questionsForFilters(ActionsEnum.FilterAllFromTo);
   }
-
 }
 
 export async function getFilesForAction(action: string) {
-
   const files = await getFilesNameFromDir(WORKDATADIR);
 
   const answer = await inquirer.prompt([
@@ -90,7 +88,7 @@ export async function getFilesForAction(action: string) {
 
   if (answer.action === ActionsEnum.Exit) {
     app();
-  } else if(action === ActionsEnum.CalculateOne) {
+  } else if (action === ActionsEnum.CalculateOne) {
     loadCalculateOneWith(answer.action);
   } else if (action === ActionsEnum.FilterOne) {
     questionsForFilters(ActionsEnum.FilterOne, answer.action);
@@ -188,9 +186,9 @@ export async function lastQustionsForFilter(filterType: FilterTypesType, fileNam
 
   if (value === ActionsEnum.Exit) {
     questionsForFilters(ActionsEnum.FilterAll);
-  } else if(fileName) {
+  } else if (fileName) {
     loadFilterOne(filterType, value, fileName);
-  } else  {
+  } else {
     loadFilterAllWith(filterType, value);
   }
 }

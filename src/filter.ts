@@ -6,9 +6,7 @@ export default function filterLines(
   filter: string,
   type: FilterTypesType,
 ): Array<string> {
-  if (type === FilterTypesEnum.None) {
-    return lines;
-  } else if (type === FilterTypesEnum.Regex) {
+  if (type === FilterTypesEnum.Regex) {
     return lines.filter((line) => {
       if (line.match(filter)) {
         return true;

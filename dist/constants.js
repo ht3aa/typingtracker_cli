@@ -4,7 +4,6 @@ import { dirname } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 export const WORKDATADIR = __dirname + "/../workFiles/";
-console.log(__dirname);
 export const EXISTOPTION = {
     name: chalk.bgRed.white.bold("Exit"),
     value: "q",

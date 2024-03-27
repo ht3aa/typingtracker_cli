@@ -1,9 +1,7 @@
 import { calculateOne } from "./calulateOne.js";
-import filterLines from "./filterAll.js";
-import filterOne from "./filterOne.js";
+import filterLines from "./filter.js";
 import { WORKDATADIR } from "./constants.js";
 import {
-  filterLinesFn,
   getAllLinesFromFiles,
   getFilesNameFromDir,
   getLinesFromFile,
@@ -14,22 +12,22 @@ import {
   sortDataAsc,
 } from "./lib.js";
 import {
-    app,
+  app,
   lastQustionsForFilter,
   lastQustionsForFilterAllFromTo,
   getFilesForAction,
   questionsForFilters,
 } from "./cli.js";
-import filterAllFromTo from "./filterAllFromTo.js";
+import filterAllFromTo from "./filterFromTo.js";
 import { FilterTypesType } from "./types.js";
 import { ActionsEnum, FilterTypesEnum } from "./enums.js";
 
 export async function loadCalculateAll() {
   const files = await getFilesNameFromDir(WORKDATADIR);
   const lines = await getAllLinesFromFiles(files);
-  const productivity = calculateOne(serializeCSVsToObjects(lines))
+  const productivity = calculateOne(serializeCSVsToObjects(lines));
   printTotalProductivityMap([productivity]);
-  app()
+  app();
 }
 
 export async function loadCalculateOneWith(fileName: string) {
@@ -42,29 +40,33 @@ export async function loadCalculateOneWith(fileName: string) {
 export async function loadFilterAllWith(filterType: FilterTypesType, filter: string) {
   const files = await getFilesNameFromDir(WORKDATADIR);
   const lines = await getAllLinesFromFiles(files);
-  const filterdLines = filterLines(lines, filter, filterType);
-  const productivity = calculateOne(serializeCSVsToObjects(filterdLines));
 
-  sortDataAsc(filterdLines);
-  printLines(filterdLines);
-  printTotalProductivityMap([productivity]);
-
-  if(filterType === FilterTypesEnum.None){
+  if (filterType === FilterTypesEnum.None) {
+    printLines(lines);
     questionsForFilters(ActionsEnum.FilterAll);
   } else {
-
+    const filterdLines = filterLines(lines, filter, filterType);
+    const productivity = calculateOne(serializeCSVsToObjects(filterdLines));
+    sortDataAsc(filterdLines);
+    printLines(filterdLines);
+    printTotalProductivityMap([productivity]);
     lastQustionsForFilter(filterType);
   }
 }
 
 export async function loadFilterOne(filterType: FilterTypesType, filter: string, fileName: string) {
   const lines = await getLinesFromFile(fileName);
-  const filterdLines = filterLines(lines, filter, filterType);
-  printLines(filterdLines);
 
-  if(filterType === FilterTypesEnum.None){
+  if (filterType === FilterTypesEnum.None) {
+    printLines(lines);
     questionsForFilters(ActionsEnum.FilterOne, fileName);
   } else {
+    const filterdLines = filterLines(lines, filter, filterType);
+    const productivity = calculateOne(serializeCSVsToObjects(filterdLines));
+
+    sortDataAsc(filterdLines);
+    printLines(filterdLines);
+    printTotalProductivityMap([productivity]);
     lastQustionsForFilter(filterType, fileName);
   }
 }

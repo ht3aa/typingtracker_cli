@@ -8,11 +8,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { calculateOne } from "./calulateOne.js";
-import filterLines from "./filterAll.js";
+import filterLines from "./filter.js";
 import { WORKDATADIR } from "./constants.js";
 import { getAllLinesFromFiles, getFilesNameFromDir, getLinesFromFile, printLines, printProductivityMap, printTotalProductivityMap, serializeCSVsToObjects, sortDataAsc, } from "./lib.js";
 import { app, lastQustionsForFilter, lastQustionsForFilterAllFromTo, getFilesForAction, questionsForFilters, } from "./cli.js";
-import filterAllFromTo from "./filterAllFromTo.js";
+import filterAllFromTo from "./filterFromTo.js";
 import { ActionsEnum, FilterTypesEnum } from "./enums.js";
 export function loadCalculateAll() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -35,15 +35,16 @@ export function loadFilterAllWith(filterType, filter) {
     return __awaiter(this, void 0, void 0, function* () {
         const files = yield getFilesNameFromDir(WORKDATADIR);
         const lines = yield getAllLinesFromFiles(files);
-        const filterdLines = filterLines(lines, filter, filterType);
-        const productivity = calculateOne(serializeCSVsToObjects(filterdLines));
-        sortDataAsc(filterdLines);
-        printLines(filterdLines);
-        printTotalProductivityMap([productivity]);
         if (filterType === FilterTypesEnum.None) {
+            printLines(lines);
             questionsForFilters(ActionsEnum.FilterAll);
         }
         else {
+            const filterdLines = filterLines(lines, filter, filterType);
+            const productivity = calculateOne(serializeCSVsToObjects(filterdLines));
+            sortDataAsc(filterdLines);
+            printLines(filterdLines);
+            printTotalProductivityMap([productivity]);
             lastQustionsForFilter(filterType);
         }
     });
@@ -51,12 +52,16 @@ export function loadFilterAllWith(filterType, filter) {
 export function loadFilterOne(filterType, filter, fileName) {
     return __awaiter(this, void 0, void 0, function* () {
         const lines = yield getLinesFromFile(fileName);
-        const filterdLines = filterLines(lines, filter, filterType);
-        printLines(filterdLines);
         if (filterType === FilterTypesEnum.None) {
+            printLines(lines);
             questionsForFilters(ActionsEnum.FilterOne, fileName);
         }
         else {
+            const filterdLines = filterLines(lines, filter, filterType);
+            const productivity = calculateOne(serializeCSVsToObjects(filterdLines));
+            sortDataAsc(filterdLines);
+            printLines(filterdLines);
+            printTotalProductivityMap([productivity]);
             lastQustionsForFilter(filterType, fileName);
         }
     });
