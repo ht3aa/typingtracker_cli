@@ -1,84 +1,75 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-import { calculateOne } from "./calulateOne.js";
+import { calculateTotals } from "./calulateOne.js";
 import filterLines from "./filter.js";
-import { WORKDATADIR } from "./constants.js";
-import { getAllLinesFromFiles, getFilesNameFromDir, getLinesFromFile, printLines, printProductivityMap, printTotalProductivityMap, serializeCSVsToObjects, sortDataAsc, } from "./lib.js";
+import { getLinesFromFile, printLines, printProductivityMap, getTotalProductivityMap, 
+// serializeCSVsToObjects,
+sortDataAsc, } from "./lib.js";
 import { app, lastQustionsForFilter, lastQustionsForFilterAllFromTo, getFilesForAction, questionsForFilters, } from "./cli.js";
 import filterAllFromTo from "./filterFromTo.js";
 import { ActionsEnum, FilterTypesEnum } from "./enums.js";
-export function loadCalculateAll() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const files = yield getFilesNameFromDir(WORKDATADIR);
-        const lines = yield getAllLinesFromFiles(files);
-        const productivity = calculateOne(serializeCSVsToObjects(lines));
-        printTotalProductivityMap([productivity]);
-        app();
-    });
+export async function loadCalculateAll(data) {
+    const totals = calculateTotals(data);
+    printProductivityMap(getTotalProductivityMap([totals.totalProductivityMap], "total_Productivity"));
+    printProductivityMap(getTotalProductivityMap([totals.totalTimeInVimMap], "total_time_in_lvim"));
+    printProductivityMap(getTotalProductivityMap([totals.totalTimeSpentThinkingOrSearchingMap], "total_time_spent_thinking_or_searching"));
+    printProductivityMap(totals.totalLanguageProductivityMap);
+    app(data);
 }
-export function loadCalculateOneWith(fileName) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const lines = yield getLinesFromFile(fileName);
-        const productivity = calculateOne(serializeCSVsToObjects(lines));
-        printProductivityMap(productivity);
-        getFilesForAction(ActionsEnum.CalculateOne);
-    });
+export async function loadCalculateOneWith(data, fileName) {
+    const totals = calculateTotals(data);
+    printProductivityMap(getTotalProductivityMap([totals.totalProductivityMap], "totals"));
+    getFilesForAction(data, ActionsEnum.CalculateOne);
 }
-export function loadFilterAllWith(filterType, filter) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const files = yield getFilesNameFromDir(WORKDATADIR);
-        const lines = yield getAllLinesFromFiles(files);
-        if (filterType === FilterTypesEnum.None) {
-            const productivity = calculateOne(serializeCSVsToObjects(lines));
-            sortDataAsc(lines);
-            printLines(lines);
-            printTotalProductivityMap([productivity]);
-            questionsForFilters(ActionsEnum.FilterAll);
-        }
-        else {
-            const filterdLines = filterLines(lines, filter, filterType);
-            const productivity = calculateOne(serializeCSVsToObjects(filterdLines));
-            sortDataAsc(filterdLines);
-            printLines(filterdLines);
-            printTotalProductivityMap([productivity]);
-            lastQustionsForFilter(filterType);
-        }
-    });
-}
-export function loadFilterOne(filterType, filter, fileName) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const lines = yield getLinesFromFile(fileName);
-        if (filterType === FilterTypesEnum.None) {
-            sortDataAsc(lines);
-            printLines(lines);
-            questionsForFilters(ActionsEnum.FilterOne, fileName);
-        }
-        else {
-            const filterdLines = filterLines(lines, filter, filterType);
-            const productivity = calculateOne(serializeCSVsToObjects(filterdLines));
-            sortDataAsc(filterdLines);
-            printLines(filterdLines);
-            printTotalProductivityMap([productivity]);
-            lastQustionsForFilter(filterType, fileName);
-        }
-    });
-}
-export function loadFilterAllFromToWith(filterType, filter) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const files = yield getFilesNameFromDir(WORKDATADIR);
-        const lines = yield getAllLinesFromFiles(files);
-        const filterdLines = filterAllFromTo(lines, filter.split(" "), filterType);
-        const productivity = calculateOne(serializeCSVsToObjects(filterdLines));
+export async function loadFilterAllWith(data, filterType, filter) {
+    const copyData = data.map((line) => line);
+    if (filterType === FilterTypesEnum.None) {
+        const totals = calculateTotals(data);
+        sortDataAsc(data);
+        printLines(data);
+        printProductivityMap(getTotalProductivityMap([totals.totalProductivityMap], "total_Productivity"));
+        printProductivityMap(getTotalProductivityMap([totals.totalTimeInVimMap], "total_time_in_lvim"));
+        printProductivityMap(getTotalProductivityMap([totals.totalTimeSpentThinkingOrSearchingMap], "total_time_spent_thinking_or_searching"));
+        printProductivityMap(totals.totalLanguageProductivityMap);
+        questionsForFilters(data, ActionsEnum.FilterAll);
+    }
+    else {
+        const filterdLines = filterLines(data, filter, filterType);
+        const totals = calculateTotals(filterdLines);
         sortDataAsc(filterdLines);
         printLines(filterdLines);
-        printTotalProductivityMap([productivity]);
-        lastQustionsForFilterAllFromTo(filterType);
-    });
+        printProductivityMap(getTotalProductivityMap([totals.totalProductivityMap], "total_Productivity"));
+        printProductivityMap(getTotalProductivityMap([totals.totalTimeInVimMap], "total_time_in_lvim"));
+        printProductivityMap(getTotalProductivityMap([totals.totalTimeSpentThinkingOrSearchingMap], "total_time_spent_thinking_or_searching"));
+        printProductivityMap(totals.totalLanguageProductivityMap);
+        lastQustionsForFilter(data, filterType);
+    }
+}
+export async function loadFilterOne(data, filterType, filter, fileName) {
+    const lines = await getLinesFromFile(fileName);
+    if (filterType === FilterTypesEnum.None) {
+        sortDataAsc(data);
+        printLines(data);
+        questionsForFilters(data, ActionsEnum.FilterOne, fileName);
+    }
+    else {
+        const filterdLines = filterLines(data, filter, filterType);
+        const totals = calculateTotals(data);
+        sortDataAsc(filterdLines);
+        printLines(filterdLines);
+        printProductivityMap(getTotalProductivityMap([totals.totalProductivityMap], "total_Productivity"));
+        printProductivityMap(getTotalProductivityMap([totals.totalTimeInVimMap], "total_time_in_lvim"));
+        printProductivityMap(getTotalProductivityMap([totals.totalTimeSpentThinkingOrSearchingMap], "total_time_spent_thinking_or_searching"));
+        printProductivityMap(totals.totalLanguageProductivityMap);
+        lastQustionsForFilter(data, filterType, fileName);
+    }
+}
+export async function loadFilterAllFromToWith(data, filterType, filter) {
+    const filterdLines = filterAllFromTo(data, filter.split(" "), filterType);
+    const totals = calculateTotals(filterdLines);
+    sortDataAsc(filterdLines);
+    printLines(filterdLines);
+    printProductivityMap(getTotalProductivityMap([totals.totalProductivityMap], "total_Productivity"));
+    printProductivityMap(getTotalProductivityMap([totals.totalTimeInVimMap], "total_time_in_lvim"));
+    printProductivityMap(getTotalProductivityMap([totals.totalTimeSpentThinkingOrSearchingMap], "total_time_spent_thinking_or_searching"));
+    printProductivityMap(totals.totalLanguageProductivityMap);
+    lastQustionsForFilterAllFromTo(data, filterType);
 }

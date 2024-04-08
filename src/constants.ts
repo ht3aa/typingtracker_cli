@@ -1,7 +1,7 @@
 import chalk from "chalk";
 import { checkFolderIfExists } from "./lib.js";
 
-export const WORKDATADIR = "/tmp/typingtracker/workFiles/";
+export const WORKDATADIR = "/mnt/hasanweb/programming/workFiles/";
 
 checkFolderIfExists(WORKDATADIR);
 

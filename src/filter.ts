@@ -1,22 +1,21 @@
 import { FilterTypesEnum } from "./enums.js";
-import { FilterIndexType, FilterTypesType } from "./types.js";
+import { serializeObjectToCSV } from "./lib.js";
+import {  FilterTypesType, ProductivityDataObjectType } from "./types.js";
 
 export default function filterLines(
-  lines: Array<string>,
+  lines: Array<ProductivityDataObjectType>,
   filter: string,
   type: FilterTypesType,
-): Array<string> {
+): Array<ProductivityDataObjectType> {
   if (type === FilterTypesEnum.Regex) {
     return lines.filter((line) => {
-      if (line.match(filter)) {
+      if (serializeObjectToCSV(line).match(filter)) {
         return true;
       }
     });
-  } else if (type === FilterTypesEnum.ProjectName) {
-    return lines.filter((line: string) =>
-      line.split(",")[type as FilterIndexType].includes(filter),
-    );
+  } else if (type === FilterTypesEnum.ProjectPath) {
+    return lines.filter((line) => line[type].match(filter));
   }
 
-  return lines.filter((line: string) => line.split(",")[type as FilterIndexType] === filter);
+  return lines.filter((line) => line[type as keyof ProductivityDataObjectType] === +filter);
 }

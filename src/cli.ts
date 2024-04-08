@@ -10,12 +10,18 @@ import {
 } from "./loadActions.js";
 import { WORKDATADIR, EXISTOPTION } from "./constants.js";
 import { ActionsEnum, FilterTypesEnum } from "./enums.js";
-import { getFilesNameFromDir, inquirerInputQustion } from "./lib.js";
-import { FilterTypesType } from "./types.js";
+import {
+  getFilesNameFromDir,
+  getFilterTypeInquirerString,
+  getProductivityData,
+  inquirerInputQustion,
+  updateDb,
+} from "./lib.js";
+import { ProductivityDataObjectType, FilterTypesType } from "./types.js";
 
 console.log(chalk.bgBlue.white.bold(" Welcome to Typing Tracker (Made by www.hasanweb.tech) \n\n"));
 
-export async function app() {
+export async function app(data: ProductivityDataObjectType[]) {
   const answer = await inquirer.prompt([
     {
       type: "list",
@@ -29,7 +35,7 @@ export async function app() {
         },
         {
           name: "calculate one",
-          value: "calculateOne",
+          value: "calculateTotals",
           short: "You Chose calculate one",
         },
         {
@@ -53,20 +59,20 @@ export async function app() {
   ]);
 
   if (answer.action === ActionsEnum.CalculateAll) {
-    loadCalculateAll();
+    loadCalculateAll(data);
   } else if (answer.action === ActionsEnum.CalculateOne) {
-    getFilesForAction(ActionsEnum.CalculateOne);
+    getFilesForAction(data, ActionsEnum.CalculateOne);
   } else if (answer.action === ActionsEnum.FilterAll) {
-    questionsForFilters(ActionsEnum.FilterAll);
+    questionsForFilters(data, ActionsEnum.FilterAll);
   } else if (answer.action === ActionsEnum.FilterOne) {
-    getFilesForAction(ActionsEnum.FilterOne);
+    getFilesForAction(data, ActionsEnum.FilterOne);
   } else if (answer.action === ActionsEnum.FilterAllFromTo) {
-    questionsForFilters(ActionsEnum.FilterAllFromTo);
+    questionsForFilters(data, ActionsEnum.FilterAllFromTo);
   }
 }
 
-export async function getFilesForAction(action: string) {
-  const files = await getFilesNameFromDir(WORKDATADIR);
+export async function getFilesForAction(data: ProductivityDataObjectType[], action: string) {
+  const files = await getFilesNameFromDir(WORKDATADIR, ["lvim.csv"]);
 
   const answer = await inquirer.prompt([
     {
@@ -85,15 +91,19 @@ export async function getFilesForAction(action: string) {
   ]);
 
   if (answer.action === ActionsEnum.Exit) {
-    app();
+    app(data);
   } else if (action === ActionsEnum.CalculateOne) {
-    loadCalculateOneWith(answer.action);
+    loadCalculateOneWith(data, answer.action);
   } else if (action === ActionsEnum.FilterOne) {
-    questionsForFilters(ActionsEnum.FilterOne, answer.action);
+    questionsForFilters(data, ActionsEnum.FilterOne, answer.action);
   }
 }
 
-export async function questionsForFilters(filterAction: string, fileName?: string) {
+export async function questionsForFilters(
+  data: ProductivityDataObjectType[],
+  filterAction: string,
+  fileName?: string,
+) {
   const answer = await inquirer.prompt([
     {
       type: "list",
@@ -102,38 +112,38 @@ export async function questionsForFilters(filterAction: string, fileName?: strin
       choices: [
         {
           name: "none",
-          value: "none",
+          value: FilterTypesEnum.None,
           short: "You Chose none",
         },
         {
           name: "year",
-          value: 0,
+          value: FilterTypesEnum.Year,
           short: "You Chose year",
         },
         {
           name: "month",
-          value: 1,
+          value: FilterTypesEnum.Month,
           short: "You Chose month",
         },
         {
           name: "day",
-          value: 2,
+          value: FilterTypesEnum.Day,
           short: "You Chose day",
         },
         {
           name: "hour",
-          value: 3,
+          value: FilterTypesEnum.Hour,
           short: "You Chose hour",
         },
         {
           name: "regex",
-          value: "regex",
+          value: FilterTypesEnum.Regex,
           short: "You Chose regex",
         },
         {
-          name: "project name",
-          value: 7,
-          short: "You Chose project name",
+          name: "project",
+          value: FilterTypesEnum.ProjectPath,
+          short: "You Chose project",
         },
         EXISTOPTION,
       ],
@@ -141,86 +151,79 @@ export async function questionsForFilters(filterAction: string, fileName?: strin
   ]);
 
   if (answer.value === ActionsEnum.Exit) {
-    app();
+    app(data);
   } else if (filterAction === ActionsEnum.FilterAll) {
-    lastQustionsForFilter(answer.value);
+    lastQustionsForFilter(data, answer.value);
   } else if (filterAction === ActionsEnum.FilterAllFromTo) {
-    lastQustionsForFilterAllFromTo(answer.value);
+    lastQustionsForFilterAllFromTo(data, answer.value);
   } else if (filterAction === ActionsEnum.FilterOne && fileName) {
-    lastQustionsForFilter(answer.value, fileName);
+    lastQustionsForFilter(data, answer.value, fileName);
   }
 }
 
-export async function lastQustionsForFilter(filterType: FilterTypesType, fileName?: string) {
-  let value;
+export async function lastQustionsForFilter(
+  data: ProductivityDataObjectType[],
+  filterType: FilterTypesType,
+  fileName?: string,
+) {
+  const qustionStr = getFilterTypeInquirerString(filterType, {
+    regex: `Enter date value (example: 2022,1,1), enter ${chalk.bgRed.white.bold("q")} to exit:`,
+    year: `Enter the year (example: 2024), enter ${chalk.bgRed.white.bold("q")} to exit:`,
+    month: `Enter the month (example: 1), enter ${chalk.bgRed.white.bold("q")} to exit:`,
+    day: `Enter the day (example: 1), enter ${chalk.bgRed.white.bold("q")} to exit:`,
+    hour: `Enter the hour (example: 1), enter ${chalk.bgRed.white.bold("q")} to exit:`,
+    projectPath: `Enter the project name (example: twanis/backend), enter ${chalk.bgRed.white.bold(
+      "q",
+    )} to exit: `,
+  });
 
-  if (filterType === FilterTypesEnum.Regex) {
-    value = await inquirerInputQustion(
-      `Enter date value (example: 2022,1,1), enter ${chalk.bgRed.white.bold("q")} to exit:`,
-    );
-  } else if (filterType === FilterTypesEnum.Year) {
-    value = await inquirerInputQustion(
-      `Enter the year (example: 2024), enter ${chalk.bgRed.white.bold("q")} to exit:`,
-    );
-  } else if (filterType === FilterTypesEnum.Month) {
-    value = await inquirerInputQustion(
-      `Enter the month (example: 1), enter ${chalk.bgRed.white.bold("q")} to exit:`,
-    );
-  } else if (filterType === FilterTypesEnum.Day) {
-    value = await inquirerInputQustion(
-      `Enter the day (example: 1), enter ${chalk.bgRed.white.bold("q")} to exit:`,
-    );
-  } else if (filterType === FilterTypesEnum.Hour) {
-    value = await inquirerInputQustion(
-      `Enter the hour (example: 1), enter ${chalk.bgRed.white.bold("q")} to exit:`,
-    );
-  } else if (filterType === FilterTypesEnum.ProjectName) {
-    value = await inquirerInputQustion(
-      `Enter the project name (example: twanis/backend), enter ${chalk.bgRed.white.bold(
-        "q",
-      )} to exit: `,
-    );
-  }
-
-  if (value === ActionsEnum.Exit) {
-    questionsForFilters(ActionsEnum.FilterAll);
-  } else if (fileName) {
-    loadFilterOne(filterType, value, fileName);
+  if (!qustionStr) {
+    loadFilterAllWith(data, filterType, "none");
   } else {
-    loadFilterAllWith(filterType, value);
+    let value = await inquirerInputQustion(qustionStr);
+    if (value === ActionsEnum.Exit) {
+      questionsForFilters(data, ActionsEnum.FilterAll);
+    } else if (fileName) {
+      loadFilterOne(data, filterType, value, fileName);
+    } else {
+      loadFilterAllWith(data, filterType, value);
+    }
   }
 }
 
-export async function lastQustionsForFilterAllFromTo(filterType: FilterTypesType) {
-  let value;
+export async function lastQustionsForFilterAllFromTo(
+  data: ProductivityDataObjectType[],
+  filterType: FilterTypesType,
+) {
+  const qustionStr = getFilterTypeInquirerString(filterType, {
+    regex: `Enter date value From to (example: 2022,1,1 2022,1,20), enter ${chalk.bgRed.white.bold(
+      "q",
+    )} to exit:`,
 
-  if (filterType === FilterTypesEnum.Regex) {
-    value = await inquirerInputQustion(
-      `Enter date value From to (example: 2022,1,1 2022,1,20), enter ${chalk.bgRed.white.bold("q")} to exit:`,
-    );
-  } else if (filterType === FilterTypesEnum.Year) {
-    value = await inquirerInputQustion(
-      `Enter the year From to (example: 2022 2024), enter ${chalk.bgRed.white.bold("q")} to exit:`,
-    );
-  } else if (filterType === FilterTypesEnum.Month) {
-    value = await inquirerInputQustion(
-      `Enter the month From to (example: 1 2), enter ${chalk.bgRed.white.bold("q")} to exit:`,
-    );
-  } else if (filterType === FilterTypesEnum.Day) {
-    value = await inquirerInputQustion(
-      `Enter the day From to (example: 1 2), enter ${chalk.bgRed.white.bold("q")} to exit:`,
-    );
-  } else if (filterType === FilterTypesEnum.Hour) {
-    value = await inquirerInputQustion(
-      `Enter the hour From to (example: 1 2), enter ${chalk.bgRed.white.bold("q")} to exit:`,
-    );
-  }
+    year: `Enter the year From to (example: 2022 2024), enter ${chalk.bgRed.white.bold(
+      "q",
+    )} to exit:`,
+    month: `Enter the month From to (example: 1 2), enter ${chalk.bgRed.white.bold("q")} to exit:`,
+    day: `Enter the day From to (example: 1 2), enter ${chalk.bgRed.white.bold("q")} to exit:`,
+    hour: `Enter the hour From to (example: 1 2), enter ${chalk.bgRed.white.bold("q")} to exit:`,
+  });
 
-  if (value === ActionsEnum.Exit) {
-    questionsForFilters(ActionsEnum.FilterAllFromTo);
+  if (!qustionStr) {
+    loadFilterAllWith(data, filterType, "none");
   } else {
-    loadFilterAllFromToWith(filterType, value);
+    const value = await inquirerInputQustion(qustionStr);
+    if (value === ActionsEnum.Exit) {
+      questionsForFilters(data, ActionsEnum.FilterAllFromTo);
+    } else {
+      loadFilterAllFromToWith(data, filterType, value);
+    }
   }
 }
 
-app();
+async function loadData() {
+  await updateDb();
+  const data = await getProductivityData();
+  app(data);
+}
+
+loadData();

@@ -1,10 +1,10 @@
 export var FilterTypesEnum;
 (function (FilterTypesEnum) {
-    FilterTypesEnum[FilterTypesEnum["Year"] = 0] = "Year";
-    FilterTypesEnum[FilterTypesEnum["Month"] = 1] = "Month";
-    FilterTypesEnum[FilterTypesEnum["Day"] = 2] = "Day";
-    FilterTypesEnum[FilterTypesEnum["Hour"] = 3] = "Hour";
-    FilterTypesEnum[FilterTypesEnum["ProjectName"] = 7] = "ProjectName";
+    FilterTypesEnum["Year"] = "year";
+    FilterTypesEnum["Month"] = "month";
+    FilterTypesEnum["Day"] = "day";
+    FilterTypesEnum["Hour"] = "hour";
+    FilterTypesEnum["ProjectPath"] = "projectPath";
     FilterTypesEnum["None"] = "none";
     FilterTypesEnum["Regex"] = "regex";
 })(FilterTypesEnum || (FilterTypesEnum = {}));
@@ -16,7 +16,7 @@ export var FromToEnum;
 export var ActionsEnum;
 (function (ActionsEnum) {
     ActionsEnum["CalculateAll"] = "calculateAll";
-    ActionsEnum["CalculateOne"] = "calculateOne";
+    ActionsEnum["CalculateOne"] = "calculateTotals";
     ActionsEnum["FilterAll"] = "filterAll";
     ActionsEnum["FilterOne"] = "filterOne";
     ActionsEnum["FilterAllFromTo"] = "filterAllFromTo";

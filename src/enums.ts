@@ -1,9 +1,9 @@
 export enum FilterTypesEnum {
-  Year = 0,
-  Month,
-  Day,
-  Hour,
-  ProjectName = 7,
+  Year = "year",
+  Month = "month",
+  Day = "day",
+  Hour = "hour",
+  ProjectPath = "projectPath",
   None = "none",
   Regex = "regex",
 }
@@ -15,7 +15,7 @@ export enum FromToEnum {
 
 export enum ActionsEnum {
   CalculateAll = "calculateAll",
-  CalculateOne = "calculateOne",
+  CalculateOne = "calculateTotals",
   FilterAll = "filterAll",
   FilterOne = "filterOne",
   FilterAllFromTo = "filterAllFromTo",
