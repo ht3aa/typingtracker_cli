@@ -222,7 +222,7 @@ export async function lastQustionsForFilterAllFromTo(
 
 async function loadData() {
   await updateDb();
-  const data = await getProductivityData();
+  const data: ProductivityDataObjectType[] = await getProductivityData();
   app(data);
 }
 

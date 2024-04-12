@@ -66,7 +66,13 @@ export function serializeCSVsToObjects(
 }
 
 export function serializeObjectToCSV(line: ProductivityDataObjectType) {
-  return `${line.year},${line.month},${line.day},${line.hour},${line.minute},${line.seconds},${line.totalTimeInVim},${line.totalTimeSpentThinkingOrSearching},${line.totalProductivityInSeconds},${line.projectPath},${line.commitMsg},${line.languages.map((lang) => lang.language + '=' + lang.productivityInSeconds).join("|")}`;
+  return `${line.year},${line.month},${line.day},${line.hour},${line.minute},${line.seconds},${
+    line.totalTimeInVim
+  },${line.totalTimeSpentThinkingOrSearching},${line.totalProductivityInSeconds},${
+    line.projectPath
+  },${line.commitMsg},${line.languages
+    .map((lang) => lang.language + "=" + lang.productivityInSeconds)
+    .join("|")}`;
 }
 
 export function serializeObjectsToCSV(arr: Array<ProductivityDataObjectType>) {
@@ -100,7 +106,10 @@ export function printProductivityMap(productivity: Map<string, number>) {
   });
 }
 
-export function getTotalProductivityMap(productivityMapArr: Array<Map<string, number>>, key: string) {
+export function getTotalProductivityMap(
+  productivityMapArr: Array<Map<string, number>>,
+  key: string,
+) {
   const totalProductivity = new Map();
 
   productivityMapArr.forEach((productivity) => {
@@ -130,11 +139,11 @@ export async function getProductivityData() {
   if (!productivityDataSource.isInitialized) {
     await productivityDataSource.initialize();
   }
-const data = await productivityDataSource.getRepository("productivity").find({
+  const data = (await productivityDataSource.getRepository("productivity").find({
     relations: ["languages"],
-  }) as Array<ProductivityDataObjectType>;
+  })) as Array<ProductivityDataObjectType>;
 
-  return data
+  return data;
 }
 
 export function serializeLanguagesDataToObjects(line: string, dim: string) {

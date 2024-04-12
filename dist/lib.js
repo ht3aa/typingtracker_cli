@@ -48,7 +48,9 @@ export function serializeCSVsToObjects(lines, dim) {
     return arr;
 }
 export function serializeObjectToCSV(line) {
-    return `${line.year},${line.month},${line.day},${line.hour},${line.minute},${line.seconds},${line.totalTimeInVim},${line.totalTimeSpentThinkingOrSearching},${line.totalProductivityInSeconds},${line.projectPath},${line.commitMsg},${line.languages.map((lang) => lang.language + '=' + lang.productivityInSeconds).join("|")}`;
+    return `${line.year},${line.month},${line.day},${line.hour},${line.minute},${line.seconds},${line.totalTimeInVim},${line.totalTimeSpentThinkingOrSearching},${line.totalProductivityInSeconds},${line.projectPath},${line.commitMsg},${line.languages
+        .map((lang) => lang.language + "=" + lang.productivityInSeconds)
+        .join("|")}`;
 }
 export function serializeObjectsToCSV(arr) {
     let csv = [];
@@ -103,9 +105,9 @@ export async function getProductivityData() {
     if (!productivityDataSource.isInitialized) {
         await productivityDataSource.initialize();
     }
-    const data = await productivityDataSource.getRepository("productivity").find({
+    const data = (await productivityDataSource.getRepository("productivity").find({
         relations: ["languages"],
-    });
+    }));
     return data;
 }
 export function serializeLanguagesDataToObjects(line, dim) {

@@ -10,7 +10,7 @@ export function calculateTotals(productivityDataObj) {
         totalTimeSpentThinkingOrSearchingMap.set(projectPath, (totalTimeSpentThinkingOrSearchingMap.get(projectPath) ?? 0) + totalTimeSpentThinkingOrSearching);
         for (let j = 0; j < languages.length; j++) {
             const { language, productivityInSeconds } = languages[j];
-            totalLanguageProductivityMap.set(`${language}`, (totalLanguageProductivityMap.get(`${language}|${projectPath}`) ?? 0) + productivityInSeconds);
+            totalLanguageProductivityMap.set(`${language}`, (totalLanguageProductivityMap.get(`${language}`) ?? 0) + productivityInSeconds);
         }
     }
     return {
