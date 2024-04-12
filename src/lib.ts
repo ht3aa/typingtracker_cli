@@ -91,15 +91,7 @@ function formatProductivitySeconds(seconds: number) {
   const minutes = Math.floor(seconds / 60);
   seconds = seconds % 60;
 
-  return `
-  Years: ${years}
-  Months: ${months}
-  Weeks: ${weeks}
-  Days: ${days}
-  Hours: ${hours}
-  Minutes: ${minutes}
-  Seconds: ${seconds}
-`;
+  return `${years}/${months}/${days}  ${hours}:${minutes}:${seconds}`;
 }
 
 export function printProductivityMap(productivity: Map<string, number>) {
